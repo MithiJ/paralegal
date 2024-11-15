@@ -40,6 +40,7 @@ impl EdgeSelection {
     }
 
     /// Create a graph adaptor that implements this edge selection.
+    /// TODOM: Come back here for traversal
     pub fn filter_graph<G: IntoEdgeReferences + Data<EdgeWeight = EdgeInfo>>(
         self,
         g: G,

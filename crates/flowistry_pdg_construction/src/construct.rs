@@ -436,6 +436,78 @@ impl<'tcx> PartialGraph<'tcx> {
 }
 
 impl<'tcx> PartialGraph<'tcx> {
+    // fn register_mutation_with_tentativeness(
+    //     &mut self,
+    //     results: &LocalAnalysisResults<'tcx, '_>,
+    //     state: &InstructionState<'tcx>,
+    //     inputs: Inputs<'tcx>,
+    //     mutated: Either<Place<'tcx>, DepNode<'tcx>>,
+    //     location: Location,
+    //     target_use: TargetUse,
+    // ) {
+    //     trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
+    //     let constructor = &results.analysis;
+    //     let ctrl_inputs = constructor.find_control_inputs(location);
+
+    //     trace!("  Found control inputs {ctrl_inputs:?}");
+
+    //     let data_inputs = match inputs {
+    //         Inputs::Unresolved { places } => places
+    //             .into_iter()
+    //             .flat_map(|(input, input_use)| {
+    //                 constructor
+    //                     .find_data_inputs(state, input)
+    //                     .into_iter()
+    //                     .map(move |input| {
+    //                         (
+    //                             input,
+    //                             input_use.map_or(SourceUse::Operand, SourceUse::Argument),
+    //                         )
+    //                     })
+    //             })
+    //             .collect::<Vec<_>>(),
+    //         Inputs::Resolved { node_use, node } => vec![(node, node_use)],
+    //     };
+    //     trace!("  Data inputs: {data_inputs:?}");
+
+    //     let outputs = match mutated {
+    //         Either::Right(node) => vec![node],
+    //         Either::Left(place) => results
+    //             .analysis
+    //             .find_outputs(place, location)
+    //             .into_iter()
+    //             .map(|t| t.1)
+    //             .collect(),
+    //     };
+    //     trace!("  Outputs: {outputs:?}");
+
+    //     for output in &outputs {
+    //         trace!("  Adding node {output}");
+    //         self.nodes.insert(*output);
+    //     }
+
+    //     // Add data dependencies: data_input -> output
+    //     for (data_input, source_use) in data_inputs {
+    //         let data_edge = DepEdge::data(
+    //             constructor.make_call_string(location),
+    //             source_use,
+    //             target_use,
+    //             todo!("Fetch tentativeness perhaps")
+    //         );
+    //         for output in &outputs {
+    //             trace!("  Adding edge {data_input} -> {output}");
+    //             self.edges.insert((data_input, *output, data_edge));
+    //         }
+    //     }
+
+    //     // Add control dependencies: ctrl_input -> output
+    //     for (ctrl_input, edge) in &ctrl_inputs {
+    //         for output in &outputs {
+    //             self.edges.insert((*ctrl_input, *output, *edge));
+    //         }
+    //     }
+    // }
+
     fn register_mutation(
         &mut self,
         results: &LocalAnalysisResults<'tcx, '_>,
@@ -492,6 +564,9 @@ impl<'tcx> PartialGraph<'tcx> {
                 constructor.make_call_string(location),
                 source_use,
                 target_use,
+                0 
+                // TODO: this is a placeholder to make the original code
+                // run with the new tentativeness field within the DepEdge struct
             );
             for output in &outputs {
                 trace!("  Adding edge {data_input} -> {output}");

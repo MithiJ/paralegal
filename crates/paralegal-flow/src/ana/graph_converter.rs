@@ -69,7 +69,7 @@ impl<'a, 'tcx, C: Extend<DefId>> GraphConverter<'tcx, 'a, C> {
         generator: &'a SPDGGenerator<'tcx>,
         known_def_ids: &'a mut C,
         target: &'a FnToAnalyze,
-    ) -> Result<Self> {
+    ) -> Result<Self> { // TODOM: So this is an initial graph
         let local_def_id = target.def_id;
         let start = Instant::now();
         let (dep_graph, stats) = Self::create_flowistry_graph(generator, local_def_id)?;
@@ -425,6 +425,7 @@ impl<'a, 'tcx, C: Extend<DefId>> GraphConverter<'tcx, 'a, C> {
                 at,
                 source_use,
                 target_use,
+                tentativeness
             } = *e.weight();
             self.spdg.add_edge(
                 self.new_node_for(e.source()),
@@ -435,6 +436,7 @@ impl<'a, 'tcx, C: Extend<DefId>> GraphConverter<'tcx, 'a, C> {
                         DepEdgeKind::Control => EdgeKind::Control,
                         DepEdgeKind::Data => EdgeKind::Data,
                     },
+                    tentativeness,
                     source_use,
                     target_use,
                 },

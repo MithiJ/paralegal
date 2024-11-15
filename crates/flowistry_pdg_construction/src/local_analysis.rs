@@ -150,13 +150,54 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     };
                     let at = self.make_call_string(ctrl_loc);
                     let src = self.make_dep_node(ctrl_place, ctrl_loc);
-                    let edge = DepEdge::control(at, SourceUse::Operand, TargetUse::Assign);
+                    let edge = DepEdge::control(
+                        at, 
+                        SourceUse::Operand, 
+                        TargetUse::Assign, 
+                        0); 
+                        // TODO: This is a placeholder to make the original code
+                        // compile. Originally tentativeness is 0
                     out.push((src, edge));
                 }
             }
         }
         out
     }
+
+    // pub(crate) fn find_control_inputs_with_tentativeness(&self, location: Location) -> Vec<(DepNode<'tcx>, DepEdge)> {
+    //     let mut blocks_seen = HashSet::<BasicBlock>::from_iter(Some(location.block));
+    //     let mut block_queue = vec![location.block];
+    //     let mut out = vec![];
+    //     while let Some(block) = block_queue.pop() {
+    //         if let Some(ctrl_deps) = self.control_dependencies.dependent_on(block) {
+    //             for dep in ctrl_deps.iter() {
+    //                 let ctrl_loc = self.mono_body.terminator_loc(dep);
+    //                 let Terminator {
+    //                     kind: TerminatorKind::SwitchInt { discr, .. },
+    //                     ..
+    //                 } = self.mono_body.basic_blocks[dep].terminator()
+    //                 else {
+    //                     if blocks_seen.insert(dep) {
+    //                         block_queue.push(dep);
+    //                     }
+    //                     continue;
+    //                 };
+    //                 let Some(ctrl_place) = discr.place() else {
+    //                     continue;
+    //                 };
+    //                 let at = self.make_call_string(ctrl_loc);
+    //                 let src = self.make_dep_node(ctrl_place, ctrl_loc);
+    //                 let edge = DepEdge::control(
+    //                     at, 
+    //                     SourceUse::Operand, 
+    //                     TargetUse::Assign, 
+    //                     todo!("fetch tentativeness or initialize")); 
+    //                 out.push((src, edge));
+    //             }
+    //         }
+    //     }
+    //     out
+    // }
 
     fn call_change_callback(&self) -> Option<&dyn CallChangeCallback<'tcx>> {
         self.memo.call_change_callback.as_ref().map(Rc::as_ref)
@@ -681,18 +722,71 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 for location in locations {
                     let src = self.make_dep_node(*place, *location);
                     let dst = self.make_dep_node(*place, RichLocation::End);
+                    
                     let edge = DepEdge::data(
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
                         ret_kind,
+                        0, 
+                        // TODO: This is a placeholder to make the original code
+                        // compile. Originally, tentativeness is 0
                     );
                     final_state.edges.insert((src, dst, edge));
                 }
             }
         }
-
+        
         final_state
     }
+
+    // pub(crate) fn construct_partial_with_tentativeness(&'a self) -> PartialGraph<'tcx> {
+    //     let mut analysis = self
+    //         .into_engine(self.tcx(), &self.mono_body)
+    //         .iterate_to_fixpoint();
+
+    //     let mut final_state = PartialGraph::new(
+    //         self.generic_args(),
+    //         self.def_id,
+    //         self.mono_body.arg_count,
+    //         self.mono_body.local_decls(),
+    //     );
+
+    //     analysis.visit_reachable_with(&self.mono_body, &mut final_state);
+
+    //     let all_returns = self
+    //         .mono_body
+    //         .all_returns()
+    //         .map(|ret| ret.block)
+    //         .collect_vec();
+    //     let mut analysis = analysis.into_results_cursor(&self.mono_body);
+    //     for block in all_returns {
+    //         analysis.seek_to_block_end(block);
+    //         let return_state = analysis.get();
+    //         for (place, locations) in &return_state.last_mutation {
+    //             let ret_kind = if place.local == RETURN_PLACE {
+    //                 TargetUse::Return
+    //             } else if let Some(num) = other_as_arg(*place, &self.mono_body) {
+    //                 TargetUse::MutArg(num)
+    //             } else {
+    //                 continue;
+    //             };
+    //             for location in locations {
+    //                 let src = self.make_dep_node(*place, *location);
+    //                 let dst = self.make_dep_node(*place, RichLocation::End);
+                    
+    //                 let edge = DepEdge::data(
+    //                     self.make_call_string(self.mono_body.terminator_loc(block)),
+    //                     SourceUse::Operand,
+    //                     ret_kind,
+    //                     todo!("Fetch actual tentativeness"), 
+    //                 );
+    //                 final_state.edges.insert((src, dst, edge));
+    //             }
+    //         }
+    //     }
+
+    //     final_state
+    // }
 
     /// Determine the type of call-site.
     ///

@@ -782,10 +782,11 @@ pub struct EdgeInfo {
     pub kind: EdgeKind,
     /// Where in the program this edge arises from
     pub at: CallString,
-
-    /// Why the source of this edge is read
+    /// Is this edge tentative (TODOM: describe further!)
+    pub tentativeness: u32,
+    /// Why the source of this edge is read TODOM: why is this needed?
     pub source_use: SourceUse,
-    /// Why the target of this edge is written
+    /// Why the target of this edge is written // TODOM: why is this needed?
     pub target_use: TargetUse,
 }
 

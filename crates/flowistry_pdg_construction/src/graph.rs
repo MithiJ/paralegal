@@ -159,33 +159,36 @@ pub struct DepEdge {
     pub source_use: SourceUse,
 
     pub target_use: TargetUse,
+    pub tentativeness: u32
 }
 
 impl DepEdge {
     /// Constructs a data edge.
-    pub fn data(at: CallString, source_use: SourceUse, target_use: TargetUse) -> Self {
+    pub fn data(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: u32) -> Self {
         DepEdge {
             kind: DepEdgeKind::Data,
             at,
             source_use,
             target_use,
+            tentativeness
         }
     }
 
     /// Constructs a control edge.
-    pub fn control(at: CallString, source_use: SourceUse, target_use: TargetUse) -> Self {
+    pub fn control(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: u32) -> Self {
         DepEdge {
             kind: DepEdgeKind::Control,
             at,
             source_use,
             target_use,
+            tentativeness
         }
     }
 }
 
 impl fmt::Display for DepEdge {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}\n@ {}", self.kind, self.at)
+        write!(f, "{:?}\n@ {}", self.kind, self.at) //  TODO: add support for tentativeness
     }
 }
 
