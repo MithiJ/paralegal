@@ -159,8 +159,10 @@ pub struct DepEdge {
     pub source_use: SourceUse,
 
     pub target_use: TargetUse,
+    
     pub tentativeness: u32
 }
+/// Edges represent dependencies- control or data
 
 impl DepEdge {
     /// Constructs a data edge.
