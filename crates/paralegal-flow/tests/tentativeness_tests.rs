@@ -44,8 +44,8 @@ define_test!(conditional_modification: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    assert!(source.flows_to_any(&sink));
-    // assert!(!source.flows_to_any(&sink));
+    // assert!(source.flows_to_any(&sink));
+    assert!(!source.flows_to_any(&sink));
 });
 // Here, source shouldn't flow to sink because there is tentativeness - if it 
 // enters the conditional branch, img is overwritten and doesn't get deleted.
@@ -55,8 +55,8 @@ define_test!(modified_in_loop: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    assert!(source.flows_to_any(&sink));
-    // assert!(!source.flows_to_any(&sink));
+    // assert!(source.flows_to_any(&sink));
+    assert!(!source.flows_to_any(&sink));
 });
 
 define_test!(modifying_helper: graph -> {
@@ -64,6 +64,7 @@ define_test!(modifying_helper: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    assert!(source.flows_to_any(&sink));
+    // assert!(source.flows_to_any(&sink));
+    assert!(!source.flows_to_any(&sink));
 });
 
