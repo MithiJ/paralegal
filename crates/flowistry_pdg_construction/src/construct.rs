@@ -213,6 +213,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         location: Location,
     ) {
         if let TerminatorKind::SwitchInt { discr, .. } = &terminator.kind {
+            // TODOM: definitely mutated - synthetic assignment
             if let Some(place) = discr.place() {
                 self.register_mutation(
                     results,
@@ -273,6 +274,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         }
 
         trace!("Handling terminator {:?} as not inlined", terminator.kind);
+        // Read mut status from mutation
         let mut arg_vis =
             ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
                 self.register_mutation(
@@ -395,6 +397,10 @@ impl<'tcx> PartialGraph<'tcx> {
 
         // For each source node CHILD that is parentable to PLACE,
         // add an edge from PLACE -> CHILD.
+        // For a struct arg it must connect all the struct fields that are seprate places
+        // YOu can always have tentativeness in indirection
+        // aliases- reachable places : 
+        // Can you have 2 aliases that are both modified mutable borrow
         trace!("PARENT -> CHILD EDGES:");
         for (child_src, _kind) in child_graph.parentable_srcs(is_root) {
             if let Some(translation) = translator.translate_to_parent(child_src.place) {
@@ -416,6 +422,7 @@ impl<'tcx> PartialGraph<'tcx> {
         //
         // PRECISION TODO: for a given child place, we only want to connect
         // the *last* nodes in the child function to the parent, not *all* of them.
+        // Also tentative
         trace!("CHILD -> PARENT EDGES:");
         for (child_dst, kind) in child_graph.parentable_dsts(is_root) {
             if let Some(parent_place) = translator.translate_to_parent(child_dst.place) {
