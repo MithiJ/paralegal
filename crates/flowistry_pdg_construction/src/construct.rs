@@ -4,8 +4,11 @@ use either::Either;
 use flowistry::mir::FlowistryInput;
 use log::trace;
 use petgraph::graph::DiGraph;
-
+use crate::graph::Tentativeness;
 use flowistry_pdg::{CallString, GlobalLocation};
+
+use log::{debug, log_enabled, Level};
+
 
 use df::{AnalysisDomain, Results, ResultsVisitor};
 use rustc_hash::FxHashMap;
@@ -27,7 +30,7 @@ use crate::{
         push_call_string_root, DepEdge, DepGraph, DepNode, PartialGraph, SourceUse, TargetUse,
     },
     local_analysis::{CallHandling, InstructionState, LocalAnalysis},
-    mutation::{ModularMutationVisitor, Mutation, Time},
+    mutation::{ModularMutationVisitor, Mutation, Time, MutationStatus},
     utils::{manufacture_substs_for, try_resolve_function},
     CallChangeCallback,
 };
@@ -215,7 +218,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         if let TerminatorKind::SwitchInt { discr, .. } = &terminator.kind {
             // TODOM: definitely mutated - synthetic assignment
             if let Some(place) = discr.place() {
-                self.register_mutation(
+                self.register_mutation_with_tentativeness(
                     results,
                     state,
                     Inputs::Unresolved {
@@ -224,6 +227,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
                     Either::Left(place),
                     location,
                     TargetUse::Assign,
+                    Tentativeness::Certain
                 );
             }
             return;
@@ -235,7 +239,18 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         trace!("Handling terminator {:?} as not inlined", terminator.kind);
         let mut arg_vis =
             ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
-                self.register_mutation(
+                let tentativeness = match mutation.status {
+                    MutationStatus::Possibly => {
+                        debug!("possibly mutation case");
+                        Tentativeness::ControlFlowInduced
+                    },
+                    MutationStatus::Definitely => {
+                        debug!("definitely mutation case");
+                        Tentativeness::Certain
+                    }
+                };
+
+                self.register_mutation_with_tentativeness(
                     results,
                     state,
                     Inputs::Unresolved {
@@ -244,6 +259,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
                     Either::Left(mutation.mutated),
                     location,
                     mutation.mutation_reason,
+                    tentativeness
                 )
             });
         arg_vis.set_time(Time::Before);
@@ -277,7 +293,18 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         // Read mut status from mutation
         let mut arg_vis =
             ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
-                self.register_mutation(
+                let tentativeness = match mutation.status {
+                    MutationStatus::Possibly => {
+                        debug!("possibly mutation case");
+                        Tentativeness::ControlFlowInduced
+                    },
+                    MutationStatus::Definitely => {
+                        debug!("definitely mutation case");
+                        Tentativeness::Certain
+                    }
+                };
+
+                self.register_mutation_with_tentativeness(
                     results,
                     state,
                     Inputs::Unresolved {
@@ -286,6 +313,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
                     Either::Left(mutation.mutated),
                     location,
                     mutation.mutation_reason,
+                    tentativeness
                 )
             });
         arg_vis.set_time(Time::After);
@@ -298,12 +326,24 @@ impl<'tcx> PartialGraph<'tcx> {
         &'a mut self,
         results: &'a LocalAnalysisResults<'tcx, 'mir>,
         state: &'a InstructionState<'tcx>,
+
     ) -> ModularMutationVisitor<'a, 'tcx, impl FnMut(Location, Mutation<'tcx>) + 'a> {
         /// TODOM: here also pass in the mutation status and depEdge. What are 
         /// the other places register_mutation is called and it should be 
         /// evident where the information comes from!
         ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
-            self.register_mutation(
+            let tentativeness = match mutation.status {
+                MutationStatus::Possibly => {
+                    debug!("possibly mutation case");
+                    Tentativeness::ControlFlowInduced
+                },
+                MutationStatus::Definitely => {
+                    debug!("definitely mutation case");
+                    Tentativeness::Certain
+                }
+            };
+
+            self.register_mutation_with_tentativeness(
                 results,
                 state,
                 Inputs::Unresolved {
@@ -312,6 +352,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 Either::Left(mutation.mutated),
                 location,
                 mutation.mutation_reason,
+                tentativeness
             )
         })
     }
@@ -396,7 +437,7 @@ impl<'tcx> PartialGraph<'tcx> {
         );
 
         // For each source node CHILD that is parentable to PLACE,
-        // add an edge from PLACE -> CHILD.
+        // add an edge from PLACE -> CHILD. TODOM
         // For a struct arg it must connect all the struct fields that are seprate places
         // YOu can always have tentativeness in indirection
         // aliases- reachable places : 
@@ -404,7 +445,7 @@ impl<'tcx> PartialGraph<'tcx> {
         trace!("PARENT -> CHILD EDGES:");
         for (child_src, _kind) in child_graph.parentable_srcs(is_root) {
             if let Some(translation) = translator.translate_to_parent(child_src.place) {
-                self.register_mutation(
+                self.register_mutation_with_tentativeness(
                     results,
                     state,
                     Inputs::Unresolved {
@@ -413,6 +454,7 @@ impl<'tcx> PartialGraph<'tcx> {
                     Either::Right(child_src),
                     location,
                     TargetUse::Assign,
+                    Tentativeness::FunctionNotAnalyzed
                 );
             }
         }
@@ -426,7 +468,7 @@ impl<'tcx> PartialGraph<'tcx> {
         trace!("CHILD -> PARENT EDGES:");
         for (child_dst, kind) in child_graph.parentable_dsts(is_root) {
             if let Some(parent_place) = translator.translate_to_parent(child_dst.place) {
-                self.register_mutation(
+                self.register_mutation_with_tentativeness(
                     results,
                     state,
                     Inputs::Resolved {
@@ -436,6 +478,7 @@ impl<'tcx> PartialGraph<'tcx> {
                     Either::Left(parent_place),
                     location,
                     kind.map_or(TargetUse::Return, TargetUse::MutArg),
+                    Tentativeness::FunctionNotAnalyzed
                 );
             }
         }
@@ -458,6 +501,7 @@ impl<'tcx> PartialGraph<'tcx> {
         mutated: Either<Place<'tcx>, DepNode<'tcx>>,
         location: Location,
         target_use: TargetUse,
+        tentativeness: Tentativeness
     ) {
         trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
         let constructor = &results.analysis;
@@ -506,7 +550,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 constructor.make_call_string(location),
                 source_use,
                 target_use,
-                todo!("Fetch tentativeness perhaps") // TODOM: convert to enum
+                tentativeness
             );
             for output in &outputs {
                 trace!("  Adding edge {data_input} -> {output}");
@@ -578,7 +622,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 constructor.make_call_string(location),
                 source_use,
                 target_use,
-                0 
+                Tentativeness::Certain
                 // TODO: this is a placeholder to make the original code
                 // run with the new tentativeness field within the DepEdge struct
             );

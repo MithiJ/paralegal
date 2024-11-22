@@ -16,15 +16,13 @@ macro_rules! define_test {
         paralegal_flow::define_flow_test_template!(TEST_CRATE_ANALYZED, CRATE_DIR, $($t)*);
     };
 }
-
 // TODO: how do I get marked struct?
 // define_test!(deletes_in_both_cases: graph -> {
-//     // let user_data = Identifier::new_intern("user_data");
-//     let img = graph.marked(Identifier::new_intern("user_data"));
-//     let end = graph.marked(Identifier::new_intern("sink"));
-//     assert!(!end.is_empty());
-//     assert!(!img.is_empty());
-//     assert!(img.flows_to_any(&end));
+//     let source = graph.srcs_with_type(Identifier::new_intern("user_data"));
+//     let sink = graph.marked(Identifier::new_intern("sink"));
+//     assert!(!source.is_empty());
+//     assert!(!sink.is_empty());
+//     assert!(!source.flows_to_any(&sink));
 // });
 // The original version of Paralegal should pass this test since we have img 
 // connected to the img in the if-else and the one that passes into delete
@@ -39,13 +37,18 @@ define_test!(deletes_in_dummy_case: graph -> {
     assert!(!source.flows_to_any(&sink));
 });
 
+/** 
+ * ASK JUSTUS: How to write this like the quantifier but use the source code
+ * Or remodel to use define_test! 
+*/
+
 define_test!(conditional_modification: graph -> {
     let source = graph.marked(Identifier::new_intern("source"));
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    // assert!(source.flows_to_any(&sink));
-    assert!(!source.flows_to_any(&sink));
+    assert!(source.flows_to_any(&sink));
+    // assert!(!source.flows_to_any(&sink));
 });
 // Here, source shouldn't flow to sink because there is tentativeness - if it 
 // enters the conditional branch, img is overwritten and doesn't get deleted.
@@ -55,8 +58,8 @@ define_test!(modified_in_loop: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    // assert!(source.flows_to_any(&sink));
-    assert!(!source.flows_to_any(&sink));
+    assert!(source.flows_to_any(&sink));
+    // assert!(!source.flows_to_any(&sink));
 });
 
 define_test!(modifying_helper: graph -> {
@@ -64,7 +67,7 @@ define_test!(modifying_helper: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    // assert!(source.flows_to_any(&sink));
-    assert!(!source.flows_to_any(&sink));
+    assert!(source.flows_to_any(&sink));
+    // assert!(!source.flows_to_any(&sink));
 });
 

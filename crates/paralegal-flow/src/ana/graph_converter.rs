@@ -9,7 +9,7 @@ use crate::{
 use flowistry_pdg::SourceUse;
 use flowistry_pdg_construction::{
     body_cache::BodyCache,
-    graph::{DepEdge, DepEdgeKind, DepGraph, DepNode},
+    graph::{DepEdge, DepEdgeKind, DepGraph, DepNode, Tentativeness},
     is_async_trait_fn, match_async_trait_assign,
     utils::{try_monomorphize, try_resolve_function, type_as_fn},
 };
@@ -436,7 +436,11 @@ impl<'a, 'tcx, C: Extend<DefId>> GraphConverter<'tcx, 'a, C> {
                         DepEdgeKind::Control => EdgeKind::Control,
                         DepEdgeKind::Data => EdgeKind::Data,
                     },
-                    tentativeness,
+                    tentativeness: match tentativeness {
+                        Tentativeness::Certain => paralegal_spdg::Tentativeness::Certain,
+                        Tentativeness::FunctionNotAnalyzed => paralegal_spdg::Tentativeness::Uncertain,
+                        Tentativeness::ControlFlowInduced => paralegal_spdg::Tentativeness::Uncertain
+                    },
                     source_use,
                     target_use,
                 },

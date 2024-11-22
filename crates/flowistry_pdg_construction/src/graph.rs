@@ -160,13 +160,20 @@ pub struct DepEdge {
 
     pub target_use: TargetUse,
     
-    pub tentativeness: u32
+    pub tentativeness: Tentativeness,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum Tentativeness {
+    ControlFlowInduced,
+    FunctionNotAnalyzed,
+    Certain
 }
 /// Edges represent dependencies- control or data
 
 impl DepEdge {
     /// Constructs a data edge.
-    pub fn data(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: u32) -> Self {
+    pub fn data(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: Tentativeness) -> Self {
         DepEdge {
             kind: DepEdgeKind::Data,
             at,
@@ -177,7 +184,7 @@ impl DepEdge {
     }
 
     /// Constructs a control edge.
-    pub fn control(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: u32) -> Self {
+    pub fn control(at: CallString, source_use: SourceUse, target_use: TargetUse, tentativeness: Tentativeness) -> Self {
         DepEdge {
             kind: DepEdgeKind::Control,
             at,

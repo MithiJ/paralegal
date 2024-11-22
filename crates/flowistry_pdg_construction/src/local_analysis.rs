@@ -25,7 +25,7 @@ use crate::{
     async_support::*,
     body_cache::CachedBody,
     calling_convention::*,
-    graph::{DepEdge, DepNode, PartialGraph, SourceUse, TargetUse},
+    graph::{DepEdge, DepNode, PartialGraph, SourceUse, TargetUse, Tentativeness},
     mutation::{ModularMutationVisitor, Mutation, Time},
     utils::{self, is_async, is_virtual, try_monomorphize, type_as_fn},
     CallChangeCallback, CallChanges, CallInfo, InlineMissReason, MemoPdgConstructor, SkipCall,
@@ -154,7 +154,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                         at, 
                         SourceUse::Operand, 
                         TargetUse::Assign, 
-                        0); 
+                        Tentativeness::Certain); 
                         // TODO: This is a placeholder to make the original code
                         // compile. Originally tentativeness is 0
                     out.push((src, edge));
@@ -727,7 +727,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
                         ret_kind,
-                        0, 
+                        Tentativeness::Certain, 
                         // TODO: This is a placeholder to make the original code
                         // compile. Originally, tentativeness is 0
                     );
