@@ -528,6 +528,7 @@ fn assert_edge_location_invariant<'tcx>(
         return;
     }
     // Control flow case. The edge is introduced at the `switchInt`
+    // TODO(Mithi): This is the control flow case
     if let RichLocation::Location(loc) = at.leaf().location {
         if at.leaf().function == location.leaf().function
             && matches!(

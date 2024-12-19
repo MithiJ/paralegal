@@ -115,7 +115,7 @@ impl<'tcx> MemoPdgConstructor<'tcx> {
         resolution: Instance<'tcx>,
     ) -> Option<&'a PartialGraph<'tcx>> {
         self.pdg_cache.get_maybe_recursive(resolution, |_| {
-            let g = LocalAnalysis::new(self, resolution).construct_partial();
+            let g = LocalAnalysis::new(self, resolution).construct_partial_with_tentativeness();
             trace!("Computed new for {resolution:?}");
             g.check_invariants();
             g
@@ -188,6 +188,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         location: Location,
     ) {
         let mut vis = self.modular_mutation_visitor(results, state);
+        // TODOM: at this point, check when last modiifed
 
         vis.visit_statement(statement, location)
     }
@@ -216,7 +217,9 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         location: Location,
     ) {
         if let TerminatorKind::SwitchInt { discr, .. } = &terminator.kind {
+            debug!("Hitting a case of definitely mutated for synthetic assignment at terminator");
             // TODOM: definitely mutated - synthetic assignment
+            //TODOM shouldn't this be a tentative edge? This is just the conditional in the switch int being assigned a new spot
             if let Some(place) = discr.place() {
                 self.register_mutation_with_tentativeness(
                     results,
@@ -227,7 +230,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
                     Either::Left(place),
                     location,
                     TargetUse::Assign,
-                    Tentativeness::Certain
+                    Tentativeness::Certain 
                 );
             }
             return;
@@ -293,6 +296,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         // Read mut status from mutation
         let mut arg_vis =
             ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
+                debug!("{:?}",location);
                 let tentativeness = match mutation.status {
                     MutationStatus::Possibly => {
                         debug!("possibly mutation case");
@@ -332,6 +336,7 @@ impl<'tcx> PartialGraph<'tcx> {
         /// the other places register_mutation is called and it should be 
         /// evident where the information comes from!
         ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
+            debug!("{:?}",location);
             let tentativeness = match mutation.status {
                 MutationStatus::Possibly => {
                     debug!("possibly mutation case");
@@ -445,6 +450,7 @@ impl<'tcx> PartialGraph<'tcx> {
         trace!("PARENT -> CHILD EDGES:");
         for (child_src, _kind) in child_graph.parentable_srcs(is_root) {
             if let Some(translation) = translator.translate_to_parent(child_src.place) {
+                debug!("TODOM: traslating to parent");
                 self.register_mutation_with_tentativeness(
                     results,
                     state,
@@ -505,7 +511,7 @@ impl<'tcx> PartialGraph<'tcx> {
     ) {
         trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
         let constructor = &results.analysis;
-        let ctrl_inputs = constructor.find_control_inputs(location);
+        let ctrl_inputs = constructor.find_control_inputs_with_tentativeness(location);
 
         trace!("  Found control inputs {ctrl_inputs:?}");
 
@@ -577,7 +583,7 @@ impl<'tcx> PartialGraph<'tcx> {
     ) {
         trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
         let constructor = &results.analysis;
-        let ctrl_inputs = constructor.find_control_inputs(location);
+        let ctrl_inputs = constructor.find_control_inputs_with_tentativeness(location);
 
         trace!("  Found control inputs {ctrl_inputs:?}");
 

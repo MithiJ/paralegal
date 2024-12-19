@@ -812,6 +812,9 @@ impl EdgeInfo {
     pub fn is_control(&self) -> bool {
         matches!(self.kind, EdgeKind::Control)
     }
+    pub fn is_tentative(&self) -> bool {
+        matches!(self.tentativeness, Tentativeness::Uncertain)
+    }
 }
 
 /// The type of an edge

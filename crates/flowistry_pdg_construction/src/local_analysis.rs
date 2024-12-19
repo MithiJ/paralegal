@@ -5,6 +5,8 @@ use flowistry_pdg::{CallString, GlobalLocation, RichLocation};
 use itertools::Itertools;
 use log::{debug, log_enabled, trace, Level};
 
+use crate::mutation::MutationStatus;
+
 use rustc_borrowck::consumers::{places_conflict, PlaceConflictBias};
 use rustc_hash::{FxHashMap, FxHashSet};
 use rustc_hir::def_id::DefId;
@@ -150,6 +152,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     };
                     let at = self.make_call_string(ctrl_loc);
                     let src = self.make_dep_node(ctrl_place, ctrl_loc);
+                    debug!("WHat is this one for find control inputs {:?}  {:?}", ctrl_loc, ctrl_place);
                     let edge = DepEdge::control(
                         at, 
                         SourceUse::Operand, 
@@ -187,11 +190,12 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     };
                     let at = self.make_call_string(ctrl_loc);
                     let src = self.make_dep_node(ctrl_place, ctrl_loc);
+                    debug!("Is this a possibly case? {:?} => {:?}", ctrl_loc, ctrl_place);
                     let edge = DepEdge::control(
                         at, 
                         SourceUse::Operand, 
                         TargetUse::Assign, 
-                        todo!("fetch tentativeness or initialize")); 
+                        Tentativeness::ControlFlowInduced); 
                     out.push((src, edge));
                 }
             }
@@ -645,6 +649,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         };
 
         let parentable_dsts = child_constructor.parentable_dsts(|n| n.len() == 1);
+        // TODOM: maybe check here?? If theres a set of parents
         let parent_body = &self.mono_body;
 
         let place_translator = PlaceTranslator::new(
@@ -679,6 +684,17 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         ModularMutationVisitor::new(
             &self.place_info,
             move |location, mutation: Mutation<'tcx>| {
+                debug!("In local analysis {:?}", location);
+                match mutation.status {
+                    MutationStatus::Possibly => {
+                        debug!("possibly mutation case");
+                        Tentativeness::ControlFlowInduced
+                    },
+                    MutationStatus::Definitely => {
+                        debug!("definitely mutation case");
+                        Tentativeness::Certain
+                    }
+                };
                 self.apply_mutation(state, location, mutation.mutated)
             },
         )
@@ -722,7 +738,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 for location in locations {
                     let src = self.make_dep_node(*place, *location);
                     let dst = self.make_dep_node(*place, RichLocation::End);
-                    
+                    debug!("Is this a possibly case? {:?} => {:?}", location, *place);
                     let edge = DepEdge::data(
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
@@ -774,11 +790,12 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     let src = self.make_dep_node(*place, *location);
                     let dst = self.make_dep_node(*place, RichLocation::End);
                     
+                    debug!("Is this a possibly ctrl flow case case? {:?} => {:?}", location, *place);
                     let edge = DepEdge::data(
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
                         ret_kind,
-                        todo!("Fetch actual tentativeness"), 
+                        Tentativeness::ControlFlowInduced, 
                     );
                     final_state.edges.insert((src, dst, edge));
                 }

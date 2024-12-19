@@ -272,6 +272,7 @@ where
             })
             .collect::<Vec<_>>();
 
+        debug!("Checking {location:?}: {destination:?} , possibly");
         for (num, arg) in arg_places.iter().copied() {
             for arg_mut in self.place_info.reachable_values(arg, Mutability::Mut) {
                 if *arg_mut != arg {
@@ -332,6 +333,7 @@ where
                 );
             }
         }
+        debug!("Checking {location:?}: {destination:?} , possibly");
         if matches!(self.time, Time::Unspecified | Time::After) {
             for (num, arg) in arg_places.iter().copied() {
                 for arg_mut in self.place_info.reachable_values(arg, Mutability::Mut) {
@@ -366,7 +368,7 @@ where
     F: FnMut(Location, Mutation<'tcx>),
 {
     fn visit_assign(&mut self, mutated: &Place<'tcx>, rvalue: &Rvalue<'tcx>, location: Location) {
-        debug!("Checking {location:?}: {mutated:?} = {rvalue:?}");
+        debug!("Checking {location:?}: {mutated:?} = {rvalue:?}, definitely");
 
         if !self.handle_special_rvalues(mutated, rvalue, location) {
             let mut collector = PlaceCollector::default();
