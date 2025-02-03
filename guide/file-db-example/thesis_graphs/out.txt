@@ -1,0 +1,267 @@
+
+INFO  [paralegal_flow::ana] Handling target delete
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+DEBUG [flowistry_pdg_construction::local_analysis] Dumped debug MIR delete.mir
+INFO  [flowistry::mir::placeinfo] Starting aliases...
+INFO  [flowistry::mir::aliases] Initial places in loan set: 0, total regions 1, definite regions: 0
+DEBUG [flowistry::mir::aliases] Initial contains: {
+    '?4294967040: {},
+}
+DEBUG [flowistry::mir::aliases] Definite: {}
+INFO  [flowistry::mir::aliases] Final places in loan set: 0
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_u32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[1]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[5]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _3 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _3
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb3[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_u32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb1[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _4 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: u32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[1]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[2]: _0 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[2]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _0 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _0
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_u32, definitely
+DEBUG [flowistry_pdg_construction::construct] bb0[1]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_1) with inputs Unresolved { places: [] } at bb0[1]
+TRACE [flowistry_pdg_construction::construct]   Found control inputs []
+TRACE [flowistry_pdg_construction::construct]   Data inputs: []
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _1, at: CallString(0x11a304090 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[1]) }]), place_pretty: Some(0x11a204290 : "x"), is_split: false, span: src/main.rs:41:17: 41:18 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node x @ delete::bb0[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_u32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[1]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::construct] bb0[5]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_3) with inputs Unresolved { places: [] } at bb0[5]
+TRACE [flowistry_pdg_construction::construct]   Found control inputs []
+TRACE [flowistry_pdg_construction::construct]   Data inputs: []
+TRACE [flowistry_pdg_construction::utils] Retyping _3 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _3
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _3, at: CallString(0x11a2045b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[5]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node _3 @ delete::bb0[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[5]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _3 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _3
+DEBUG [flowistry_pdg_construction::construct] Hitting a case of definitely mutated for synthetic assignment at terminator
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_3) with inputs Unresolved { places: [(_3, None)] } at bb0[6]
+TRACE [flowistry_pdg_construction::construct]   Found control inputs []
+TRACE [flowistry_pdg_construction::local_analysis] Finding inputs for place _3
+TRACE [flowistry_pdg_construction::utils] Retyping _3 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _3
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _1 and _3
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _3 and _3
+TRACE [flowistry_pdg_construction::construct]   Data inputs: [(DepNode { place: _3, at: CallString(0x11a2045b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[5]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }, Operand)]
+TRACE [flowistry_pdg_construction::utils] Retyping _3 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _3
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _3, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node _3 @ delete::bb0[6]
+TRACE [flowistry_pdg_construction::construct]   Adding edge _3 @ delete::bb0[5] -> _3 @ delete::bb0[6]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+TRACE [flowistry_pdg_construction::construct] Handling terminator switchInt(move _3) -> [0: bb3, otherwise: bb1] as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_u32), definitely
+DEBUG [flowistry_pdg_construction::construct] bb1[0]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_4) with inputs Unresolved { places: [(_1, None)] } at bb1[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+TRACE [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _3, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }, DepEdge { kind: Control, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), source_use: Operand, target_use: Assign, tentativeness: ControlFlowInduced })]
+TRACE [flowistry_pdg_construction::local_analysis] Finding inputs for place _1
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _1 and _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _3 and _1
+TRACE [flowistry_pdg_construction::construct]   Data inputs: [(DepNode { place: _1, at: CallString(0x11a304090 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[1]) }]), place_pretty: Some(0x11a204290 : "x"), is_split: false, span: src/main.rs:41:17: 41:18 (#0) }, Operand)]
+TRACE [flowistry_pdg_construction::utils] Retyping _4 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _4
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _4, at: CallString(0x11a4042c0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb1[0]) }]), place_pretty: None, is_split: true, span: src/main.rs:43:9: 43:15 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node _4 @ delete::bb1[0]
+TRACE [flowistry_pdg_construction::construct]   Adding edge x @ delete::bb0[1] -> _4 @ delete::bb1[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_u32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb1[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _4 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _4
+TRACE [flowistry_pdg_construction::construct] Handling terminator assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5] as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5]
+TRACE [flowistry_pdg_construction::construct] Handling terminator assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5] as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_u32) -> [success: bb2, unwind: bb5]
+TRACE [flowistry_pdg_construction::construct] Handling terminator resume as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+TRACE [flowistry_pdg_construction::construct] Handling terminator resume as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: u32), definitely
+DEBUG [flowistry_pdg_construction::construct] bb2[0]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_1) with inputs Unresolved { places: [((_4.0: u32), None)] } at bb2[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+TRACE [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _3, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }, DepEdge { kind: Control, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), source_use: Operand, target_use: Assign, tentativeness: ControlFlowInduced })]
+TRACE [flowistry_pdg_construction::local_analysis] Finding inputs for place (_4.0: u32)
+TRACE [flowistry_pdg_construction::utils] Retyping (_4.0: u32) in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Projecting _4.[] : (u32, bool) with Field(0, u32)
+TRACE [flowistry_pdg_construction::utils]     Final translation: (_4.0: u32)
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _4 and (_4.0: u32)
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _1 and (_4.0: u32)
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _3 and (_4.0: u32)
+TRACE [flowistry_pdg_construction::construct]   Data inputs: [(DepNode { place: _4, at: CallString(0x11a4042c0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb1[0]) }]), place_pretty: None, is_split: true, span: src/main.rs:43:9: 43:15 (#0) }, Operand)]
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _1, at: CallString(0x139705200 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb2[0]) }]), place_pretty: Some(0x11a204290 : "x"), is_split: false, span: src/main.rs:43:9: 43:15 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node x @ delete::bb2[0]
+TRACE [flowistry_pdg_construction::construct]   Adding edge _4 @ delete::bb1[0] -> x @ delete::bb2[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: u32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::construct] bb2[1]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_2) with inputs Unresolved { places: [] } at bb2[1]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+TRACE [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _3, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }, DepEdge { kind: Control, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), source_use: Operand, target_use: Assign, tentativeness: ControlFlowInduced })]
+TRACE [flowistry_pdg_construction::construct]   Data inputs: []
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _2, at: CallString(0x11a304130 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb2[1]) }]), place_pretty: None, is_split: false, span: src/main.rs:43:9: 43:15 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node _2 @ delete::bb2[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[1]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+TRACE [flowistry_pdg_construction::construct] Handling terminator goto -> bb4 as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+TRACE [flowistry_pdg_construction::construct] Handling terminator goto -> bb4 as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[2]: _0 = _1, definitely
+DEBUG [flowistry_pdg_construction::construct] bb4[2]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_0) with inputs Unresolved { places: [(_1, None)] } at bb4[2]
+TRACE [flowistry_pdg_construction::construct]   Found control inputs []
+TRACE [flowistry_pdg_construction::local_analysis] Finding inputs for place _1
+TRACE [flowistry_pdg_construction::utils] Retyping _1 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _4 and _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _1 and _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _2 and _1
+TRACE [flowistry_pdg_construction::local_analysis] Checking conflict status of _3 and _1
+TRACE [flowistry_pdg_construction::construct]   Data inputs: [(DepNode { place: _1, at: CallString(0x139705200 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb2[0]) }]), place_pretty: Some(0x11a204290 : "x"), is_split: false, span: src/main.rs:43:9: 43:15 (#0) }, Operand), (DepNode { place: _1, at: CallString(0x11a304090 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[1]) }]), place_pretty: Some(0x11a204290 : "x"), is_split: false, span: src/main.rs:41:17: 41:18 (#0) }, Operand)]
+TRACE [flowistry_pdg_construction::utils] Retyping _0 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _0
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _0, at: CallString(0x11a304280 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb4[2]) }]), place_pretty: Some(0x11a304710 : "RETURN"), is_split: false, span: src/main.rs:45:12: 45:13 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node RETURN @ delete::bb4[2]
+TRACE [flowistry_pdg_construction::construct]   Adding edge x @ delete::bb2[0] -> RETURN @ delete::bb4[2]
+TRACE [flowistry_pdg_construction::construct]   Adding edge x @ delete::bb0[1] -> RETURN @ delete::bb4[2]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[2]: _0 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[2]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _0 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _0
+TRACE [flowistry_pdg_construction::construct] Handling terminator return as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: return
+TRACE [flowistry_pdg_construction::construct] Handling terminator return as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::construct] bb3[0]
+DEBUG [flowistry_pdg_construction::construct] definitely mutation case
+TRACE [flowistry_pdg_construction::construct] Registering mutation to Left(_2) with inputs Unresolved { places: [] } at bb3[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+TRACE [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _3, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:42:8: 42:26 (#0) }, DepEdge { kind: Control, at: CallString(0x11a4043b0 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb0[6]) }]), source_use: Operand, target_use: Assign, tentativeness: ControlFlowInduced })]
+TRACE [flowistry_pdg_construction::construct]   Data inputs: []
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+TRACE [flowistry_pdg_construction::construct]   Outputs: [DepNode { place: _2, at: CallString(0x11a304120 : [GlobalLocation { function: DefId(0:15 ~ file_db_example[7cc1]::delete), location: Location(bb3[0]) }]), place_pretty: None, is_split: false, span: src/main.rs:44:6: 44:6 (#0) }]
+TRACE [flowistry_pdg_construction::construct]   Adding node _2 @ delete::bb3[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb3[0]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _2 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _2
+TRACE [flowistry_pdg_construction::construct] Handling terminator goto -> bb4 as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+TRACE [flowistry_pdg_construction::construct] Handling terminator goto -> bb4 as not inlined
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[2]: _0 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[2]
+DEBUG [flowistry_pdg_construction::local_analysis] definitely mutation case
+TRACE [flowistry_pdg_construction::utils] Retyping _0 in context of DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils]     Final translation: _0
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: return
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly ctrl flow case case? Location(bb4[2]) => _0
+TRACE [flowistry_pdg_construction::construct] Computed new for Instance { def: Item(DefId(0:15 ~ file_db_example[7cc1]::delete)), args: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+TRACE [flowistry_pdg_construction::utils] Manufacturing for DefId(0:15 ~ file_db_example[7cc1]::delete)
+TRACE [flowistry_pdg_construction::utils] Found generics Generics { parent: None, parent_count: 0, params: [], param_def_id_to_index: {}, has_self: false, has_late_bound_regions: None, host_effect_index: None }
+TRACE [flowistry_pdg_construction::utils] Found predicates InstantiatedPredicates { predicates: [], spans: [] }
+INFO  [paralegal_flow] All elems walked
+Analysis finished with timing: Rustc: 162ms 357μs Flowistry: 2ms 431μs Conversion: 483μs 500ns Serialization: 1ms 200μs 
+Graph loaded.
+Policy successful

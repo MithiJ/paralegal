@@ -24,7 +24,7 @@ use std::{
 use paralegal_spdg::{
     traverse::{generic_flows_to, EdgeSelection},
     utils::write_sep,
-    DefInfo, EdgeInfo, Endpoint, Node, TypeId, SPDG,
+    DefInfo, EdgeInfo, Endpoint, Node, TypeId, SPDG, GlobalNode
 };
 
 use flowistry_pdg::CallString;
@@ -442,6 +442,40 @@ impl<'g> CtrlRef<'g> {
             graph: self,
         }
     }
+
+    /**
+     * TODOM: Commented out for compilation
+     * Main blocker: getting an iterator over GlobalNodes
+     * and then converting it from Global Node to Node
+     */
+    // pub fn srcs_with_type(&self, marker: Identifier) -> NodeRefs<'_> {
+    //     let def_ids:Vec<TypeId> = self.graph()
+    //         .desc
+    //         .type_info
+    //         .iter()
+    //         .filter_map(|(id, desc)| desc.markers.contains(&marker).then_some(*id))
+    //         .collect();
+    //     self.graph()
+    //     .desc
+    //     .controllers
+    //     .keys()
+    //     .flat_map(|&ctrl_id| {
+    //         def_ids.iter().flat_map(|&t| {
+    //             self.graph().desc.controllers[&ctrl_id]
+    //             .type_assigns
+    //             .iter()
+    //             .filter_map(move |(src, ids)| {
+    //                 ids.0
+    //                     .contains(&t)
+    //                     .then_some(GlobalNode::from_local_node(ctrl_id, *src))
+    //             })
+    //         })
+    //     });
+    //     NodeRefs {
+    //         nodes: // If i have Global Nodes, how do I get Node to return Noderefs
+    //         graph: self,
+    //     }
+    // }
 
     pub fn id(&self) -> Endpoint {
         self.id

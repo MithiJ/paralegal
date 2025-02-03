@@ -783,11 +783,17 @@ pub struct EdgeInfo {
     /// Where in the program this edge arises from
     pub at: CallString,
     /// Is this edge tentative (TODOM: describe further!)
-    pub tentativeness: u32,
+    pub tentativeness: Tentativeness,
     /// Why the source of this edge is read TODOM: why is this needed?
     pub source_use: SourceUse,
     /// Why the target of this edge is written // TODOM: why is this needed?
     pub target_use: TargetUse,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum Tentativeness {
+    Uncertain,
+    Certain
 }
 
 impl Display for EdgeInfo {
@@ -805,6 +811,11 @@ impl EdgeInfo {
     /// Same as `self.kind.is_control()`
     pub fn is_control(&self) -> bool {
         matches!(self.kind, EdgeKind::Control)
+    }
+
+    /// new for graph coloring
+    pub fn is_tentative(&self) -> bool {
+        !matches!(self.tentativeness, Tentativeness::Certain)
     }
 }
 

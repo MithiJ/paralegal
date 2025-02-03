@@ -167,9 +167,15 @@ impl<'a, 'd> dot::Labeller<'a, CallString, GlobalEdge> for DotPrintableProgramDe
             .graph
             .edge_weight(e.index)
             .unwrap();
-        weight
-            .is_control()
-            .then(|| LabelText::LabelStr("aqua".into()))
+        if weight.is_control() {
+            Some(LabelText::LabelStr("aqua".into()))
+        } else if weight.is_tentative() {
+            Some(LabelText::LabelStr("crimson".into()))
+        } else {
+            None
+        }
+        // TODOM: for now there's no way to mark control + tentative edges.
+        // We just overtaintas tentative but can improve this for graphics
     }
 
     fn source_port_position(

@@ -1,0 +1,22 @@
+digraph g {
+    n4933618640[label="bb0[6]|T|<p1> (1) _3"][shape="record"];
+    n4933588864[label="end|end|<p9> (9) _0"][shape="record"];
+    n4933611552[label="bb3[0]|S|<p6> (6) _2"][shape="record"];
+    n4933613264[label="bb2[1]|S|<p4> (4) _2"][shape="record"];
+    n4933617088[label="bb4[3]|S|<p8> (8) _5"][shape="record"];
+    n4933585856[label="bb0[5]|S|<p0> (0) _3"][shape="record"];
+    n4933587888[label="bb2[0]|S|<p2> (2) _1"][shape="record"];
+    n4933612784[label="bb0[1]|S|<p3> (3) _1"][shape="record"];
+    n4933616672[label="bb1[0]|S|<p7> (7) _4"][shape="record"];
+    n4933589696[label="bb4[5]|S|<p5> (5) _0"][shape="record"];
+    n4933612784:p3 -> n4933617088:p8[label=""][color="crimson"];
+    n4933585856:p0 -> n4933618640:p1[label=""];
+    n4933618640:p1 -> n4933613264:p4[label=""][color="aqua"];
+    n4933589696:p5 -> n4933588864:p9[label=""];
+    n4933618640:p1 -> n4933611552:p6[label=""][color="aqua"];
+    n4933612784:p3 -> n4933616672:p7[label=""];
+    n4933616672:p7 -> n4933587888:p2[label=""];
+    n4933618640:p1 -> n4933587888:p2[label=""][color="aqua"];
+    n4933618640:p1 -> n4933616672:p7[label=""][color="aqua"];
+    n4933587888:p2 -> n4933617088:p8[label=""][color="crimson"];
+}

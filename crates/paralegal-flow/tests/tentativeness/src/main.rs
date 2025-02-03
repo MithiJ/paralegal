@@ -13,7 +13,7 @@ impl Image {
     #[paralegal::marker(sink, return)] 
     // This is not exactly correct but replicating ext annotations?
     fn delete(&mut self) {}
-    fn modify(&mut self) {}
+    fn modify_image(&mut self) {}
 }
 #[paralegal::marker(source, return)]
 fn get_from_database(database:&str, _id:&str) -> Image { 
@@ -80,7 +80,8 @@ fn conditional_modification(img: &mut Image) {
 #[paralegal::analyze]
 fn modified_in_loop(img: &mut Image) {
     *img = get_from_database("database", img.name.as_str());
-    for value in vec![] {
+    let vec: Vec<i32> = vec![];
+    for value in vec {
         *img = Image {
             user: User{
                 name: "dummy".to_string()
@@ -94,8 +95,17 @@ fn modified_in_loop(img: &mut Image) {
 #[paralegal::analyze]
 fn modifying_helper(img: &mut Image) {
     *img = get_from_database("database", img.name.as_str());
-    *img = img.modify();
+    img.modify_image();
     img.delete();
+}
+
+#[paralegal::analyze]
+fn simple_int_increment() {
+    let mut x = 1;
+    if experimental_value {
+        x += 1
+    }
+    return x
 }
 
 fn main() {}

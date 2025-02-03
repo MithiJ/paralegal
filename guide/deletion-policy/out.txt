@@ -1,0 +1,104 @@
+DEBUG [paralegal_flow] Arguments: /Users/mithijethwa/.cargo/bin/paralegal-flow --crate-name file_db_example --edition=2021 src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --diagnostic-width=125 --crate-type bin --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked -C metadata=db3c8ec76ead5a76 -C extra-filename=-db3c8ec76ead5a76 --out-dir /Users/mithijethwa/thesis/paralegal/guide/file-db-example/target/plugin-nightly-2023-08-25/debug/deps -C incremental=/Users/mithijethwa/thesis/paralegal/guide/file-db-example/target/plugin-nightly-2023-08-25/debug/incremental -L dependency=/Users/mithijethwa/thesis/paralegal/guide/file-db-example/target/plugin-nightly-2023-08-25/debug/deps --extern paralegal=/Users/mithijethwa/thesis/paralegal/guide/file-db-example/target/plugin-nightly-2023-08-25/debug/deps/libparalegal-c9f2ca349e9f30f6.dylib --cfg paralegal --sysroot /Users/mithijethwa/.rustup/toolchains/nightly-2023-08-25-aarch64-apple-darwin --cfg paralegal -Zcrate-attr=feature(register_tool) -Zcrate-attr=register_tool(paralegal_flow) -Ztrack-diagnostics
+INFO  [paralegal_flow::ana] Handling target delete
+DEBUG [flowistry_pdg_construction::local_analysis] Dumped debug MIR delete.mir
+INFO  [flowistry::mir::placeinfo] Starting aliases...
+INFO  [flowistry::mir::aliases] Initial places in loan set: 0, total regions 1, definite regions: 0
+DEBUG [flowistry::mir::aliases] Initial contains: {
+    '?4294967040: {},
+}
+DEBUG [flowistry::mir::aliases] Definite: {}
+INFO  [flowistry::mir::aliases] Final places in loan set: 0
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_i32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb3[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_i32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb1[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_i32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: i32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[3]: _5 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[3]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[5]: _0 = const 10_u32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[7]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_i32, definitely
+DEBUG [flowistry_pdg_construction::construct] bb0[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[1]: _1 = const 1_i32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::construct] bb0[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[5]: _3 = const _, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb0[5]
+DEBUG [flowistry_pdg_construction::construct] Hitting a case of definitely mutated for synthetic assignment at terminator
+DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations??
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb0[6]: switchInt(move _3) -> [0: bb3, otherwise: bb1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_i32), definitely
+DEBUG [flowistry_pdg_construction::construct] bb1[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations??
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[0]: _4 = CheckedAdd(_1, const 1_i32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb1[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_i32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_i32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb1[1]: assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", _1, const 1_i32) -> [success: bb2, unwind: bb5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb5[0]: resume
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: i32), definitely
+DEBUG [flowistry_pdg_construction::construct] bb2[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations??
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[0]: _1 = move (_4.0: i32), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::construct] bb2[1]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[1]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb2[1]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb2[2]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[3]: _5 = _1, definitely
+DEBUG [flowistry_pdg_construction::construct] bb4[3]
+DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations??
+DEBUG [flowistry_pdg_construction::construct] found multiple data inputs for node
+DEBUG [flowistry_pdg_construction::construct] found multiple data inputs for node
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[3]: _5 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[3]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[5]: _0 = const 10_u32, definitely
+DEBUG [flowistry_pdg_construction::construct] bb4[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[5]: _0 = const 10_u32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[7]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[7]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[7]: return
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::construct] bb3[0]
+DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb0[6] => _3
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[0]: _2 = const (), definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb3[0]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb3[1]: goto -> bb4
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[3]: _5 = _1, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[3]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[5]: _0 = const 10_u32, definitely
+DEBUG [flowistry_pdg_construction::local_analysis] In local analysis bb4[5]
+DEBUG [flowistry_pdg_construction::mutation] Checking bb4[7]: return
+DEBUG [flowistry_pdg_construction::local_analysis] found sth tentative!
+DEBUG [flowistry_pdg_construction::local_analysis] source is RETURN @ delete::bb4[5]
+DEBUG [flowistry_pdg_construction::local_analysis] dst is RETURN @ delete::end
+INFO  [paralegal_flow] All elems walked
+Analysis finished with timing: Rustc: 158ms 73μs Flowistry: 1ms 116μs Conversion: 380μs 542ns Serialization: 1ms 100μs 
+Graph loaded.
+Policy successful
