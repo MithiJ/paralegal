@@ -1,0 +1,3 @@
+Analysis finished with timing: Rustc: 164ms 658μs Flowistry: 13ms 730μs Conversion: 440μs 41ns Serialization: 1ms 463μs 
+Graph loaded.
+Policy successful

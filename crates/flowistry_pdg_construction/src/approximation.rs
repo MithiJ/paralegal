@@ -1,4 +1,5 @@
 use log::trace;
+use log::debug;
 
 use rustc_abi::VariantIdx;
 
@@ -70,7 +71,8 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         let aggregate_kind =
             AggregateKind::Adt(adt_id.did(), VariantIdx::from_u32(0), generics, None, None);
         let rvalue = Rvalue::Aggregate(Box::new(aggregate_kind), operands);
-        trace!("Handling new_unchecked as assign for {destination:?}");
+        debug!("Handling new_unchecked as assign for {destination:?}");
+        debug!("Could this be a narrowing spot #2");
         vis.visit_assign(&destination, &rvalue, location);
     }
 }

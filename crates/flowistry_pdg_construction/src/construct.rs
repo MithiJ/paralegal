@@ -6,6 +6,7 @@ use log::trace;
 use petgraph::graph::DiGraph;
 use crate::graph::Tentativeness;
 use flowistry_pdg::{CallString, GlobalLocation};
+use std::collections::HashMap;
 
 use log::{debug, log_enabled, Level};
 
@@ -406,6 +407,7 @@ impl<'tcx> PartialGraph<'tcx> {
                     Box::new(AggregateKind::Tuple),
                     IndexVec::from_iter(args.iter().cloned()),
                 );
+                debug!("We are registering a synthetic assignment here. Perhaps also narrowing? #1");
                 self.modular_mutation_visitor(results, state).visit_assign(
                     destination,
                     &rvalue,
@@ -460,7 +462,8 @@ impl<'tcx> PartialGraph<'tcx> {
                     Either::Right(child_src),
                     location,
                     TargetUse::Assign,
-                    Tentativeness::FunctionNotAnalyzed
+                    // Tentativeness::FunctionNotAnalyzed
+                    Tentativeness::Certain
                 );
             }
         }
@@ -484,7 +487,8 @@ impl<'tcx> PartialGraph<'tcx> {
                     Either::Left(parent_place),
                     location,
                     kind.map_or(TargetUse::Return, TargetUse::MutArg),
-                    Tentativeness::FunctionNotAnalyzed
+                    // Tentativeness::FunctionNotAnalyzed
+                    Tentativeness::Certain
                 );
             }
         }
@@ -509,11 +513,11 @@ impl<'tcx> PartialGraph<'tcx> {
         target_use: TargetUse,
         tentativeness: Tentativeness
     ) {
-        trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
+        debug!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
         let constructor = &results.analysis;
         let ctrl_inputs = constructor.find_control_inputs_with_tentativeness(location);
 
-        trace!("  Found control inputs {ctrl_inputs:?}");
+        debug!("  Found control inputs {ctrl_inputs:?}");
 
         let data_inputs = match inputs {
             Inputs::Unresolved { places } => places
@@ -533,6 +537,20 @@ impl<'tcx> PartialGraph<'tcx> {
             Inputs::Resolved { node_use, node } => vec![(node, node_use)],
         };
         trace!("  Data inputs: {data_inputs:?}");
+        let mut seen_count: HashMap<GlobalLocation, usize> = HashMap::new();
+        let mut unique_inputs = 0;
+        for (node, _) in data_inputs.iter() {
+            let loc = node.at.leaf(); // DepNode -> Callstring -> CallStringInner -> GlobalLocations -> latest GlobalLocation
+            *seen_count.entry(loc).or_insert(0) += 1;
+            if *seen_count.entry(loc).or_insert(0) == 1 {
+                unique_inputs += 1;
+            } else if *seen_count.entry(loc).or_insert(0) == 2{
+                unique_inputs -= 1;
+            }
+            // debug!("For {loc}, seen: {*seen_count.entry(loc).or_insert(0)}")
+        }
+        debug!{"Unique inputs {unique_inputs}"};
+        // If multiple basic blocks then mark it all tentative?
 
         let outputs = match mutated {
             Either::Right(node) => vec![node],
@@ -551,14 +569,46 @@ impl<'tcx> PartialGraph<'tcx> {
         }
 
         // Add data dependencies: data_input -> output
-        let num_inputs = data_inputs.len();
+        // let num_inputs = constructor.get_last_mutations(state);
+        let num_inputs = seen_count.len();
+        // let num_inputs = data_inputs.len();
+        // let mut arg_counts = HashSet::new();
+        // for (_, source_use) in data_inputs {
+        //     if let SourceUse::Argument(arg) = source_use {
+        //         arg_counts.entry(arg)
+        //         .and_modify(|counter| *counter += 1)
+        //         .or_insert(1);
+        //     }
+        // }
+        // for (data_input, _)
         for (data_input, source_use) in data_inputs {
-            let tent = if num_inputs > 1 {
-                debug!("found multiple data inputs for node");
-                Tentativeness::ControlFlowInduced
+            // debug!("Dinputs - {data_input} \n");
+            let loc = data_input.at.leaf();
+            let seen_ct = *seen_count.entry(loc).or_insert(0);
+            debug!("At location{loc} seen: {seen_ct} \n");
+            let mut tent = Tentativeness::Certain;
+            if num_inputs > 1 {
+                if *seen_count.entry(loc).or_insert(0) == 1 {
+                    tent = Tentativeness::ControlFlowInduced
+                // } else {
+                //     *seen_count.entry(loc).or_insert(0) -=1;
+                }
             } else {
-                Tentativeness::Certain
+                tent = Tentativeness::Certain
             };
+            // let arg_seen: bool = if let SourceUse::Argument(arg) = source_use {
+            //     if !seen.insert(arg) {
+            //         true
+            //     } else {
+            //         false
+            //     }
+            // } else {false}; add &&arg_seen to bool expr below
+            // let tent = if data {
+            //     debug!("found multiple data inputs for node");
+            //     Tentativeness::ControlFlowInduced
+            // } else {
+            //     Tentativeness::Certain
+            // };
             let data_edge = DepEdge::data(
                 constructor.make_call_string(location),
                 source_use,
@@ -598,9 +648,9 @@ impl<'tcx> PartialGraph<'tcx> {
             Inputs::Unresolved { places } => places
                 .into_iter()
                 .flat_map(|(input, input_use)| {
-                    constructor
-                        .find_data_inputs(state, input)
-                        .into_iter()
+                    let inputs = constructor
+                        .find_data_inputs(state, input);
+                    inputs.into_iter()
                         .map(move |input| {
                             (
                                 input,

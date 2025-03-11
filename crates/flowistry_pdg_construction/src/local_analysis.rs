@@ -259,6 +259,14 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         self.memo.tcx
     }
 
+    pub(crate) fn get_last_mutations(
+        &self,
+        state: &InstructionState<'tcx>,
+        // input: Place<'tcx>,
+    ) -> usize {
+        state.last_mutation.len()
+    }
+
     /// Returns all nodes `src` such that `src` is:
     /// 1. Part of the value of `input`
     /// 2. The most-recently modified location for `src`
@@ -267,12 +275,120 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         state: &InstructionState<'tcx>,
         input: Place<'tcx>,
     ) -> Vec<DepNode<'tcx>> {
-        trace!("Finding inputs for place {input:?}");
+        debug!("Finding inputs for place {input:?}");
         // Include all sources of indirection (each reference in the chain) as relevant places.
         let provenance = input
             .refs_in_projection(&self.mono_body, self.tcx())
             .map(|(place_ref, _)| Place::from_ref(place_ref, self.tcx()));
         let inputs = iter::once(input).chain(provenance);
+
+    //     let (res, has_multiple_mutations): (Vec<_>, bool) = inputs
+    // .flat_map(|place| self.aliases(place))
+    // .flat_map(|alias| {
+    //     let conflicts = state.last_mutation
+    //         .iter()
+    //         .map(|(k, locs)| (*k, locs))
+    //         .filter(move |(place, _)| {
+    //             if place.is_indirect() && place.is_arg(&self.mono_body) {
+    //                 place.local == alias.local
+    //             } else {
+    //                 let mut place = *place;
+    //                 if let Some((PlaceElem::Deref, rest)) = place.projection.split_last() {
+    //                     let mut new_place = place;
+    //                     new_place.projection = self.tcx().mk_place_elems(rest);
+    //                     if new_place.ty(&self.mono_body, self.tcx()).ty.is_box() {
+    //                         if new_place.is_indirect() {
+    //                             return false;
+    //                         }
+    //                         place = new_place;
+    //                     }
+    //                 }
+    //                 places_conflict(
+    //                     self.tcx(),
+    //                     &self.mono_body,
+    //                     place,
+    //                     alias,
+    //                     PlaceConflictBias::Overlap,
+    //                 )
+    //             }
+    //         });
+
+    //     let alias_last_mut = if alias.is_arg(&self.mono_body) {
+    //         Some((alias, &self.start_loc))
+    //     } else {
+    //         None
+    //     };
+
+    //     conflicts.chain(alias_last_mut)
+    // })
+    // .fold((Vec::new(), false), |(mut acc, mut has_multiple), (conflict, last_mut_locs)| {
+    //     if last_mut_locs.len() > 1 {
+    //         has_multiple = true;
+    //     }
+    //     acc.extend(last_mut_locs.iter().map(|last_mut_loc| self.make_dep_node(conflict, *last_mut_loc)));
+    //     (acc, has_multiple)
+    // });
+    // (res, has_multiple_mutations)
+
+        // let tentative_input = inputs
+        //     // **POINTER-SENSITIVITY:**
+        //     // If `input` involves indirection via dereferences, then resolve it to the direct places it could point to.
+        //     .flat_map(|place| self.aliases(place))
+        //     .filter(|alias| {
+        //         let conflicts = state.last_mutation
+        //         .iter()
+        //             .map(|(k, locs)| (*k, locs))
+        //             .filter(move |(place, _)| {
+        //                 if place.is_indirect() && place.is_arg(&self.mono_body) {
+        //                     // HACK: `places_conflict` seems to consider it a bug is `borrow_place`
+        //                     // includes a dereference, which should only happen if `borrow_place`
+        //                     // is an argument. So we special case that condition and just compare for local equality.
+        //                     //
+        //                     // TODO: this is not field-sensitive!
+        //                     place.local == alias.local
+        //                 } else {
+        //                     let mut place = *place;
+        //                     if let Some((PlaceElem::Deref, rest)) = place.projection.split_last() {
+        //                         let mut new_place = place;
+        //                         new_place.projection = self.tcx().mk_place_elems(rest);
+        //                         if new_place.ty(&self.mono_body, self.tcx()).ty.is_box() {
+        //                             if new_place.is_indirect() {
+        //                                 // TODO might be unsound: We assume that if
+        //                                 // there are other indirections in here,
+        //                                 // there is an alias that does not have
+        //                                 // indirections in it.
+        //                                 return false;
+        //                             }
+        //                             place = new_place;
+        //                         }
+        //                     }
+        //                     trace!("Checking conflict status of {place:?} and {alias:?}");
+        //                     places_conflict(
+        //                         self.tcx(),
+        //                         &self.mono_body,
+        //                         place,
+        //                         *alias,
+        //                         PlaceConflictBias::Overlap,
+        //                     )
+        //                 }
+        //             });
+
+        //         // Special case: if the `alias` is an un-mutated argument, then include it as a conflict
+        //         // coming from the special start location.
+        //         let alias_last_mut = if alias.is_arg(&self.mono_body) {
+        //             Some((alias, &self.start_loc))
+        //         } else {
+        //             None
+        //         };
+        //         // For each `conflict`` last mutated at the locations `last_mut`:
+        //         conflicts
+        //             .chain(alias_last_mut)
+        //             .filter(|(conflict, last_mut_locs)| {
+        //                 // For each last mutated location:
+        //                 last_mut_locs.len() > 1
+        //             }).next() // Instead of `.len() > 0`
+        //             .is_some()
+        //     }).collect().len() > 1;
 
         inputs
             // **POINTER-SENSITIVITY:**
@@ -283,7 +399,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 // Find all places that have been mutated which conflict with `alias.`
                 let last_mutations = &state.last_mutation;
                 if last_mutations.len() > 1 {
-                    debug!("Potentially found tentativeness in multiple last mutations??");
+                    debug!("Potentially found tentativeness in multiple last mutations?? for some alias");
                 }
             
                 let conflicts = last_mutations
@@ -331,19 +447,23 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 } else {
                     None
                 };
-
                 // For each `conflict`` last mutated at the locations `last_mut`:
                 conflicts
                     .chain(alias_last_mut)
                     .flat_map(|(conflict, last_mut_locs)| {
+                        let multiple_locs = last_mut_locs.len();
+                        debug!("At the end of data_inputs, for conflict we have {multiple_locs} last locations");
                         // For each last mutated location:
                         last_mut_locs.iter().map(move |last_mut_loc| {
                             // Return <CONFLICT> @ <LAST_MUT_LOC> as an input node.
-                            self.make_dep_node(conflict, *last_mut_loc)
-                        })
+                            let conflict_node = self.make_dep_node(conflict, *last_mut_loc);
+                            debug!("this is conflicting node {conflict_node}");
+                            conflict_node
+                        }) //TODOM
                     })
             })
             .collect()
+        //     (res, tentative_input)
     }
 
     pub(crate) fn find_outputs(
@@ -352,7 +472,8 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         location: Location,
     ) -> Vec<(Place<'tcx>, DepNode<'tcx>)> {
         // **POINTER-SENSITIVITY:**
-        // If `mutated` involves indirection via dereferences, then resolve it to the direct places it could point to.
+        // If `mutated` involves indirection via dereferences, then resolve it to the direct places 
+        // it could point to.
         let aliases = self.aliases(mutated).collect_vec();
 
         // **FIELD-SENSITIVITY:** we do NOT deal with fields on *writes* (in this function),
@@ -803,16 +924,16 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     let dst = self.make_dep_node(*place, RichLocation::End);
                     debug!("dst is {}",dst);
                     // debug!("Is this a possibly ctrl flow case case? {:?} => {:?}", location, *place);
-                    let tent = if locations.len() > 1 {
-                        Tentativeness::ControlFlowInduced
-                    } else {
-                        Tentativeness::Certain
-                    };
+                    // let tent = if locations.len() > 1 {
+                    //     Tentativeness::ControlFlowInduced
+                    // } else {
+                    //     Tentativeness::Certain
+                    // };
                     let edge = DepEdge::data(
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
                         ret_kind,
-                        tent, 
+                        Tentativeness::Certain, 
                     );
                     final_state.edges.insert((src, dst, edge));
                 }

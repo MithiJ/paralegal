@@ -217,7 +217,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb2[5]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_11) with inputs Unresolved { places: [] } at bb2[5]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::construct] Unique inputs 0
 DEBUG [flowistry_pdg_construction::mutation] Checking bb2[5]: _11 = const "dummy", definitely
 DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
@@ -227,7 +227,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb2[6]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_10) with inputs Unresolved { places: [(_11, None)] } at bb2[6]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _11
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -243,7 +243,7 @@ DEBUG [flowistry_pdg_construction::mutation] Combine on args!
 DEBUG [flowistry_pdg_construction::mutation] 1 inputs flowing into this arg - definitely case
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_10) with inputs Unresolved { places: [(_10, None)] } at bb2[7]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _10
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -268,7 +268,7 @@ DEBUG [flowistry_pdg_construction::mutation] THIS IS THE MOST LIKELY SPOT. if ar
 DEBUG [flowistry_pdg_construction::construct] bb2[7]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_9) with inputs Unresolved { places: [(_10, Some(0))] } at bb2[7]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _10
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -287,7 +287,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb3[1]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left((_8.0: std::string::String)) with inputs Unresolved { places: [(_9, None)] } at bb3[1]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _9
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -312,7 +312,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb4[4]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_14) with inputs Unresolved { places: [] } at bb4[4]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::construct] Unique inputs 0
 DEBUG [flowistry_pdg_construction::mutation] Checking bb4[4]: _14 = const "dummy", definitely
 DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
@@ -322,7 +322,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb4[5]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_13) with inputs Unresolved { places: [(_14, None)] } at bb4[5]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _14
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -338,7 +338,7 @@ DEBUG [flowistry_pdg_construction::mutation] Combine on args!
 DEBUG [flowistry_pdg_construction::mutation] 1 inputs flowing into this arg - definitely case
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_13) with inputs Unresolved { places: [(_13, None)] } at bb4[6]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _13
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -363,7 +363,7 @@ DEBUG [flowistry_pdg_construction::mutation] THIS IS THE MOST LIKELY SPOT. if ar
 DEBUG [flowistry_pdg_construction::construct] bb4[6]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_12) with inputs Unresolved { places: [(_13, Some(0))] } at bb4[6]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _13
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -379,7 +379,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb5[1]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(((_7.0: User).0: std::string::String)) with inputs Unresolved { places: [((_8.0: std::string::String), None)] } at bb5[1]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place (_8.0: std::string::String)
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -392,7 +392,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb5[1]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left((_7.1: std::string::String)) with inputs Unresolved { places: [(_12, None)] } at bb5[1]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place _12
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -458,7 +458,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb8[0]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left((_2.0: User)) with inputs Unresolved { places: [((_7.0: User), None)] } at bb8[0]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place (_7.0: User)
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -469,7 +469,7 @@ DEBUG [flowistry_pdg_construction::construct] At locationdelete::bb5[1] seen: 1
 DEBUG [flowistry_pdg_construction::construct] bb8[0]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left((_2.1: std::string::String)) with inputs Unresolved { places: [((_7.1: std::string::String), None)] } at bb8[0]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::local_analysis] Finding inputs for place (_7.1: std::string::String)
 DEBUG [flowistry_pdg_construction::local_analysis] Potentially found tentativeness in multiple last mutations?? for some alias
 DEBUG [flowistry_pdg_construction::local_analysis] At the end of data_inputs, for conflict we have 1 last locations
@@ -486,7 +486,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb8[1]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_5) with inputs Unresolved { places: [] } at bb8[1]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::construct] Unique inputs 0
 DEBUG [flowistry_pdg_construction::mutation] Checking bb8[1]: _5 = const (), definitely
 DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
@@ -575,7 +575,7 @@ DEBUG [flowistry_pdg_construction::local_analysis] this is conflicting node _15 
 DEBUG [flowistry_pdg_construction::construct] Unique inputs 1
 DEBUG [flowistry_pdg_construction::construct] At locationdelete::bb12[3] seen: 2 
 
-DEBUG [flowistry_pdg_construction::construct] At locationdelete::bb12[3] seen: 2 
+DEBUG [flowistry_pdg_construction::construct] At locationdelete::bb12[3] seen: 1 
 
 DEBUG [flowistry_pdg_construction::construct] At locationdelete::bb12[4] seen: 1 
 
@@ -596,7 +596,7 @@ DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
 DEBUG [flowistry_pdg_construction::construct] bb11[0]
 DEBUG [flowistry_pdg_construction::construct] Registering mutation to Left(_5) with inputs Unresolved { places: [] } at bb11[0]
 DEBUG [flowistry_pdg_construction::local_analysis] Is this a possibly case? bb1[6] => _6
-DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x140e35dd0 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
+DEBUG [flowistry_pdg_construction::construct]   Found control inputs [(DepNode { place: _6, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), place_pretty: None, is_split: false, span: src/main.rs:79:8: 79:26 (#0) }, DepEdge { kind: Control, at: CallString(0x136909a40 : [GlobalLocation { function: DefId(0:17 ~ file_db_example[7cc1]::delete), location: Location(bb1[6]) }]), source_use: Operand, target_use: Assign, tentativeness: Certain })]
 DEBUG [flowistry_pdg_construction::construct] Unique inputs 0
 DEBUG [flowistry_pdg_construction::mutation] Checking bb11[0]: _5 = const (), definitely
 DEBUG [flowistry_pdg_construction::mutation] Handling some special rvalues
@@ -609,6 +609,6 @@ DEBUG [flowistry_pdg_construction::local_analysis] found sth tentative!
 DEBUG [flowistry_pdg_construction::local_analysis] source is RETURN @ delete::bb12[4]
 DEBUG [flowistry_pdg_construction::local_analysis] dst is RETURN @ delete::end
 INFO  [paralegal_flow] All elems walked
-Analysis finished with timing: Rustc: 160ms 485μs Flowistry: 9ms 148μs Conversion: 503μs 208ns Serialization: 2ms 261μs 
+Analysis finished with timing: Rustc: 161ms 428μs Flowistry: 9ms 305μs Conversion: 499μs 667ns Serialization: 2ms 391μs 
 Graph loaded.
 Policy successful
