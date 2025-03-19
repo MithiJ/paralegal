@@ -1,3 +1,4 @@
+
 use std::{borrow::Cow, rc::Rc};
 
 use either::Either;
@@ -16,7 +17,7 @@ use rustc_hash::FxHashMap;
 use rustc_hir::def_id::{DefId, LocalDefId};
 use rustc_index::IndexVec;
 use rustc_middle::{
-    mir::{visit::Visitor, AggregateKind, Location, Place, Rvalue, Terminator, TerminatorKind},
+    mir::{visit::Visitor, AggregateKind, Location, Place, ProjectionElem, Rvalue, Terminator, TerminatorKind},
     ty::{Instance, TyCtxt},
 };
 use rustc_mir_dataflow::{self as df};
@@ -519,12 +520,19 @@ impl<'tcx> PartialGraph<'tcx> {
 
         debug!("  Found control inputs {ctrl_inputs:?}");
 
-        let data_inputs = match inputs {
-            Inputs::Unresolved { places } => places
-                .into_iter()
+        // let input_place = match &inputs {
+        //     Inputs::Unresolved { places} => places.first().map(|(p, _)| p),
+        //     Inputs::Resolved { node, node_use } => Some(&node.place),
+        // };
+
+        let (input_place, data_inputs) = match inputs {
+            // When is this actually a vector of places?
+            Inputs::Unresolved { places } => {
+                let input_nodes = places
+                .iter()
                 .flat_map(|(input, input_use)| {
                     constructor
-                        .find_data_inputs(state, input)
+                        .find_data_inputs(state, *input)
                         .into_iter()
                         .map(move |input| {
                             (
@@ -533,23 +541,56 @@ impl<'tcx> PartialGraph<'tcx> {
                             )
                         })
                 })
-                .collect::<Vec<_>>(),
-            Inputs::Resolved { node_use, node } => vec![(node, node_use)],
+                .collect::<Vec<_>>();
+            let place = places.first().map(|(p, _)| p.clone());
+            (place, input_nodes)
+            },
+            Inputs::Resolved { node_use, node } => {
+                let place_ref = &(node.place.clone());
+                (Some(node.place), vec![(node, node_use)])
+                },
         };
         trace!("  Data inputs: {data_inputs:?}");
         let mut seen_count: HashMap<GlobalLocation, usize> = HashMap::new();
         let mut unique_inputs = 0;
         for (node, _) in data_inputs.iter() {
-            let loc = node.at.leaf(); // DepNode -> Callstring -> CallStringInner -> GlobalLocations -> latest GlobalLocation
-            *seen_count.entry(loc).or_insert(0) += 1;
-            if *seen_count.entry(loc).or_insert(0) == 1 {
-                unique_inputs += 1;
-            } else if *seen_count.entry(loc).or_insert(0) == 2{
-                unique_inputs -= 1;
+            match input_place {
+                Some(input) => {
+                    // 15.1, 15.2 -> 15 -> overlapping
+                    // 15.1 vs 15.2 -> DISTINCT
+                    if input.local.as_u32() == node.place.local.as_u32() {
+                        // When they have the same base local
+                        // we can check for fields recombined into a struct
+                        // when flowing into an un-analyzed function
+                        match input.projection.first() {
+                            Some(pelt) => {unique_inputs += 1},
+                            None => {
+                                if !node.place.projection.first()
+                                .is_some_and(|proj| 
+                                    matches!(proj, ProjectionElem::Field(..))) {
+                                        unique_inputs += 1
+                                    }
+                            }
+                        }
+                    } else {
+                        // If they don't have the same base local, cannot be proven distinct
+                        // Thus, can be marked tentative.
+                        // _16 vs _15 can be DISTINCt or not.
+                        unique_inputs += 1
+                    }
+            },
+                None => {unique_inputs += 1},
             }
-            // debug!("For {loc}, seen: {*seen_count.entry(loc).or_insert(0)}")
+        //     let loc = node.at.leaf(); // DepNode -> Callstring -> CallStringInner -> GlobalLocations -> latest GlobalLocation
+        //     *seen_count.entry(loc).or_insert(0) += 1;
+        //     if *seen_count.entry(loc).or_insert(0) == 1 {
+        //         unique_inputs += 1;
+        //     } else if *seen_count.entry(loc).or_insert(0) == 2{
+        //         unique_inputs -= 1;
+        //     }
+        //     // debug!("For {loc}, seen: {*seen_count.entry(loc).or_insert(0)}")
         }
-        debug!{"Unique inputs {unique_inputs}"};
+        // debug!{"Unique inputs {unique_inputs}"};
         // If multiple basic blocks then mark it all tentative?
 
         let outputs = match mutated {
@@ -568,46 +609,74 @@ impl<'tcx> PartialGraph<'tcx> {
             self.nodes.insert(*output);
         }
 
-        // Add data dependencies: data_input -> output
-        // let num_inputs = constructor.get_last_mutations(state);
-        let num_inputs = seen_count.len();
+        // let unique_inputs = all_data_inputs
+        //             .into_iter()
+        //             .filter(move |(dn, _)|  {
+        //                 debug!("input local {:?} vs surce local {:?}", input.local, dn.place.local);
+        //                 if input.local.as_u32() == dn.place.local.as_u32() {
+        //                     // Now we are dealing with-
+        //                     // _15 -> _15
+        //                     // _15.0 -> _15
+        //                     let original_proj_elt = input.projection.first();
+        //                     debug!("original elt: {:?} source node {dn}", input);
+        //                     match original_proj_elt {
+        //                         // X -> _15.1 is not a concern for now
+        //                         Some(pelt) => true,
+        //                         // X -> _15 is a concern
+        //                         // X => _15.X and if it is a projection and a field at that 
+        //                         None => !dn.place.projection.first().is_some_and(|proj| matches!(proj, ProjectionElem::Field(..))),
+        //                     }
+        //                 } else {
+        //                     // For different base locals we want to mark tentative
+        //                     true
+        //                 }
+        //             });
+        //             debug!("unique data_inputs {:?}", unique_inputs);
+        //             unique_inputs
         // let num_inputs = data_inputs.len();
-        // let mut arg_counts = HashSet::new();
-        // for (_, source_use) in data_inputs {
-        //     if let SourceUse::Argument(arg) = source_use {
-        //         arg_counts.entry(arg)
-        //         .and_modify(|counter| *counter += 1)
-        //         .or_insert(1);
-        //     }
-        // }
-        // for (data_input, _)
+        let num_inputs = unique_inputs;
+        debug!("{unique_inputs} is how many edges we have");
         for (data_input, source_use) in data_inputs {
             // debug!("Dinputs - {data_input} \n");
+            // let place_local = data_input.place.local;
+            // let proj_elem = data_input.place.projection.first();
+            // debug!("At place local - {:?}\n", place_local);
+            // debug!("With proj elem - {:?}\n", proj_elem);
             let loc = data_input.at.leaf();
             let seen_ct = *seen_count.entry(loc).or_insert(0);
             debug!("At location{loc} seen: {seen_ct} \n");
             let mut tent = Tentativeness::Certain;
-            if num_inputs > 1 {
-                if *seen_count.entry(loc).or_insert(0) == 1 {
-                    tent = Tentativeness::ControlFlowInduced
-                // } else {
-                //     *seen_count.entry(loc).or_insert(0) -=1;
+            if num_inputs > 1 { 
+                // if *seen_count.entry(loc).or_insert(0) == 1 {
+                    match input_place {
+                        Some(input) => {
+                            if input.local.as_u32() == data_input.place.local.as_u32() {
+                                // When they have the same base local
+                                // we can check for fields recombined into a struct
+                                // when flowing into an un-analyzed function
+                                match input.projection.first() {
+                                    Some(pelt) => {tent = Tentativeness::ControlFlowInduced},
+                                    None => {
+                                        if data_input.place.projection.first()
+                                        .is_some_and(|proj| 
+                                            matches!(proj, ProjectionElem::Field(..))) {
+                                                tent = Tentativeness::Certain
+                                            } else {
+                                                tent = Tentativeness::ControlFlowInduced
+                                            }
+                                    }
+                                }
+                            } else {
+                                // If they don't have the same base local, cannot be proven distinct
+                                // Thus, can be marked tentative.
+                                tent = Tentativeness::ControlFlowInduced
+                            }
+                    },
+                        None => {tent = Tentativeness::ControlFlowInduced},
+                    }
                 }
-            } else {
-                tent = Tentativeness::Certain
-            };
-            // let arg_seen: bool = if let SourceUse::Argument(arg) = source_use {
-            //     if !seen.insert(arg) {
-            //         true
-            //     } else {
-            //         false
-            //     }
-            // } else {false}; add &&arg_seen to bool expr below
-            // let tent = if data {
-            //     debug!("found multiple data inputs for node");
-            //     Tentativeness::ControlFlowInduced
             // } else {
-            //     Tentativeness::Certain
+            //     tent = Tentativeness::Certain
             // };
             let data_edge = DepEdge::data(
                 constructor.make_call_string(location),

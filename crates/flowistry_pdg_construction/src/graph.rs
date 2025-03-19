@@ -250,7 +250,7 @@ pub struct PartialGraph<'tcx> {
     pub(crate) generics: GenericArgsRef<'tcx>,
     def_id: DefId,
     arg_count: usize,
-    local_decls: IndexVec<Local, LocalDecl<'tcx>>,
+    local_decls: IndexVec<Local, LocalDecl<'tcx>>, // TODOM: Justus: Is this interesting?
 }
 
 impl<'tcx> HasLocalDecls<'tcx> for PartialGraph<'tcx> {
