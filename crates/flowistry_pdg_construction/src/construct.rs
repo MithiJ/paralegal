@@ -7,7 +7,8 @@ use log::trace;
 use petgraph::graph::DiGraph;
 use crate::graph::Tentativeness;
 use flowistry_pdg::{CallString, GlobalLocation};
-use std::collections::HashMap;
+use std::collections::HashSet;
+// use std::collections::HashMap;
 
 use log::{debug, log_enabled, Level};
 
@@ -520,13 +521,7 @@ impl<'tcx> PartialGraph<'tcx> {
 
         debug!("  Found control inputs {ctrl_inputs:?}");
 
-        // let input_place = match &inputs {
-        //     Inputs::Unresolved { places} => places.first().map(|(p, _)| p),
-        //     Inputs::Resolved { node, node_use } => Some(&node.place),
-        // };
-
         let (input_place, data_inputs) = match inputs {
-            // When is this actually a vector of places?
             Inputs::Unresolved { places } => {
                 let input_nodes = places
                 .iter()
@@ -551,47 +546,48 @@ impl<'tcx> PartialGraph<'tcx> {
                 },
         };
         trace!("  Data inputs: {data_inputs:?}");
-        let mut seen_count: HashMap<GlobalLocation, usize> = HashMap::new();
-        let mut unique_inputs = 0;
+        // any different base local then tentative
+        // empty projection overlaps everything else
+        // S.0 and S.1 is distinct projections of the same base local
+        // TODO: test case for S.0.1
+        let mut seen = HashSet::new();
         for (node, _) in data_inputs.iter() {
-            match input_place {
-                Some(input) => {
-                    // 15.1, 15.2 -> 15 -> overlapping
-                    // 15.1 vs 15.2 -> DISTINCT
-                    if input.local.as_u32() == node.place.local.as_u32() {
-                        // When they have the same base local
-                        // we can check for fields recombined into a struct
-                        // when flowing into an un-analyzed function
-                        match input.projection.first() {
-                            Some(pelt) => {unique_inputs += 1},
-                            None => {
-                                if !node.place.projection.first()
-                                .is_some_and(|proj| 
-                                    matches!(proj, ProjectionElem::Field(..))) {
-                                        unique_inputs += 1
-                                    }
-                            }
-                        }
-                    } else {
-                        // If they don't have the same base local, cannot be proven distinct
-                        // Thus, can be marked tentative.
-                        // _16 vs _15 can be DISTINCt or not.
-                        unique_inputs += 1
-                    }
-            },
-                None => {unique_inputs += 1},
+            if seen.len() == 0 {
+                seen.insert(node);
+            } else if !seen.iter().all(|&x| places_distinct(x.place, node.place)) {
+                // only insert non overlapping nodes
+                //technically also have to remove x from set()
+                seen.insert(node);
             }
-        //     let loc = node.at.leaf(); // DepNode -> Callstring -> CallStringInner -> GlobalLocations -> latest GlobalLocation
-        //     *seen_count.entry(loc).or_insert(0) += 1;
-        //     if *seen_count.entry(loc).or_insert(0) == 1 {
-        //         unique_inputs += 1;
-        //     } else if *seen_count.entry(loc).or_insert(0) == 2{
-        //         unique_inputs -= 1;
-        //     }
-        //     // debug!("For {loc}, seen: {*seen_count.entry(loc).or_insert(0)}")
+            // match input_place {
+            //     Some(input) => {
+            //         // 15.1, 15.2 -> 15 -> overlapping
+            //         // 15.1 vs 15.2 -> DISTINCT
+            //         if input.local.as_u32() == node.place.local.as_u32() {
+            //             // When they have the same base local
+            //             // we can check for fields recombined into a struct
+            //             // when flowing into an un-analyzed function
+            //             match input.projection.first() {
+            //                 Some(pelt) => {unique_inputs += 1},
+            //                 None => {
+            //                     if !node.place.projection.first()
+            //                     .is_some_and(|proj| 
+            //                         matches!(proj, ProjectionElem::Field(..))) {
+            //                             unique_inputs += 1
+            //                         }
+            //                 }
+            //             }
+            //         } else {
+            //             // If they don't have the same base local, cannot be proven distinct
+            //             // Thus, can be marked tentative.
+            //             // _16 vs _15 can be DISTINCt or not.
+            //             unique_inputs += 1
+            //         }
+            // },
+            //     None => {unique_inputs += 1},
+            // }
         }
-        // debug!{"Unique inputs {unique_inputs}"};
-        // If multiple basic blocks then mark it all tentative?
+        debug!("{:?}", seen);
 
         let outputs = match mutated {
             Either::Right(node) => vec![node],
@@ -608,76 +604,15 @@ impl<'tcx> PartialGraph<'tcx> {
             trace!("  Adding node {output}");
             self.nodes.insert(*output);
         }
-
-        // let unique_inputs = all_data_inputs
-        //             .into_iter()
-        //             .filter(move |(dn, _)|  {
-        //                 debug!("input local {:?} vs surce local {:?}", input.local, dn.place.local);
-        //                 if input.local.as_u32() == dn.place.local.as_u32() {
-        //                     // Now we are dealing with-
-        //                     // _15 -> _15
-        //                     // _15.0 -> _15
-        //                     let original_proj_elt = input.projection.first();
-        //                     debug!("original elt: {:?} source node {dn}", input);
-        //                     match original_proj_elt {
-        //                         // X -> _15.1 is not a concern for now
-        //                         Some(pelt) => true,
-        //                         // X -> _15 is a concern
-        //                         // X => _15.X and if it is a projection and a field at that 
-        //                         None => !dn.place.projection.first().is_some_and(|proj| matches!(proj, ProjectionElem::Field(..))),
-        //                     }
-        //                 } else {
-        //                     // For different base locals we want to mark tentative
-        //                     true
-        //                 }
-        //             });
-        //             debug!("unique data_inputs {:?}", unique_inputs);
-        //             unique_inputs
-        // let num_inputs = data_inputs.len();
-        let num_inputs = unique_inputs;
-        debug!("{unique_inputs} is how many edges we have");
+        let num_inputs = seen.len();
+        // debug!("{unique_inputs} is how many edges we have");
         for (data_input, source_use) in data_inputs {
-            // debug!("Dinputs - {data_input} \n");
-            // let place_local = data_input.place.local;
-            // let proj_elem = data_input.place.projection.first();
-            // debug!("At place local - {:?}\n", place_local);
-            // debug!("With proj elem - {:?}\n", proj_elem);
-            let loc = data_input.at.leaf();
-            let seen_ct = *seen_count.entry(loc).or_insert(0);
-            debug!("At location{loc} seen: {seen_ct} \n");
+            // debug!("At location{loc} seen: {seen_ct} \n");
             let mut tent = Tentativeness::Certain;
             if num_inputs > 1 { 
-                // if *seen_count.entry(loc).or_insert(0) == 1 {
-                    match input_place {
-                        Some(input) => {
-                            if input.local.as_u32() == data_input.place.local.as_u32() {
-                                // When they have the same base local
-                                // we can check for fields recombined into a struct
-                                // when flowing into an un-analyzed function
-                                match input.projection.first() {
-                                    Some(pelt) => {tent = Tentativeness::ControlFlowInduced},
-                                    None => {
-                                        if data_input.place.projection.first()
-                                        .is_some_and(|proj| 
-                                            matches!(proj, ProjectionElem::Field(..))) {
-                                                tent = Tentativeness::Certain
-                                            } else {
-                                                tent = Tentativeness::ControlFlowInduced
-                                            }
-                                    }
-                                }
-                            } else {
-                                // If they don't have the same base local, cannot be proven distinct
-                                // Thus, can be marked tentative.
-                                tent = Tentativeness::ControlFlowInduced
-                            }
-                    },
-                        None => {tent = Tentativeness::ControlFlowInduced},
-                    }
-                }
-            // } else {
-            //     tent = Tentativeness::Certain
-            // };
+                tent = Tentativeness::ControlFlowInduced;
+            }
+
             let data_edge = DepEdge::data(
                 constructor.make_call_string(location),
                 source_use,
@@ -824,3 +759,36 @@ impl<'tcx> PartialGraph<'tcx> {
         }
     }
 }
+
+/// Defines whether places are distinct or overlapping for purposes of 
+    /// tentativeness. If 2 distinct places flow to a single node, the edges 
+    /// associated would be certain. However, if 2 overlapping nodes flow to
+    /// a single node, the edges associated would be tentative (because the 
+    /// nodes are distinct and multiple).
+    /// 
+    /// Places are said to be distinct iff they are projections of the same
+    /// struct. First, they must have the same base local. Then, their sequence
+    /// of projections must be the same except for the last projection element
+    /// in the list. For example-
+    /// 1) "15.0" vs "15.1" are distinct because they are distinct fields of the 
+    /// _15 struct
+    /// 2) "15" vs "15.0" are overlapping because the former refers to the 
+    /// struct and the latter refers to the field. Similarly "15.0" and "15.0.1"
+    /// are also overlapping/non-distinct. Here, we use the list of projection 
+    /// elements to figure out if one is the parent struct of the other or if 
+    /// both are simply fields
+    /// 3) "16" vs "15" are non-distinct because they cannot be proven to be 
+    /// distinct places (there may be aliasing involved)
+    pub fn places_distinct<'tcx>(p1: Place<'tcx>, p2: Place<'tcx>) -> bool {
+        // _16 vs _15
+        if p1.local != p2.local {
+            return false
+        }
+        // 15.0 vs 15.0.1 OR 15.1 vs 15.0.1
+        // if p1.projection.len() != p2.projection.len() {
+        //     return false
+        // }
+        // 15.0 vs 15.1 OR 15.0.3 vs 15.1.0
+        let length = p1.projection.len().min(p2.projection.len());
+        return p1.projection.iter().take(length - 1).eq(p2.projection.iter().take(length - 1))
+    }

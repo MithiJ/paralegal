@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables)]
+/// This is a classic data deletion example paired with a data deletion policy
 struct User {
     name: String,
 }
@@ -14,7 +14,7 @@ impl Image {
         todo!()
     }
     #[paralegal::marker(sink, return)] 
-    fn delete(self) {
+    fn delete_sink(name:String) {
         todo!()
     }
 }
