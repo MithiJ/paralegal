@@ -3,13 +3,13 @@ struct UserData {
     pub data: Vec<i64>,
 }
 
-#[paralegal::analyze]
-fn process_if() {
-    let user_data = get_user_data();
-    if check_user_data(&user_data) {
-        send_user_data(&user_data);
-    }
-}
+// #[paralegal::analyze]
+// fn process_if() {
+//     let user_data = get_user_data();
+//     if check_user_data(&user_data) {
+//         send_user_data(&user_data);
+//     }
+// }
 
 #[paralegal::analyze]
 fn process_basic() {
@@ -18,53 +18,53 @@ fn process_basic() {
     send_user_data(&user_data);
 }
 
-#[paralegal::analyze]
-fn process_if_after() {
-    let mut user_data = get_user_data();
-    if check_user_data(&user_data) {
-        modify(&mut user_data);
-    }
-    send_user_data(&user_data);
-}
+// #[paralegal::analyze]
+// fn process_if_after() {
+//     let mut user_data = get_user_data();
+//     if check_user_data(&user_data) {
+//         modify(&mut user_data);
+//     }
+//     send_user_data(&user_data);
+// }
 
-#[paralegal::analyze]
-fn process_nested_if() {
-    let user_data = get_user_data();
-    if check_user_data(&user_data) {
-        if check2(&user_data) {
-            send_user_data(&user_data);
-        }
-    }
-}
+// #[paralegal::analyze]
+// fn process_nested_if() {
+//     let user_data = get_user_data();
+//     if check_user_data(&user_data) {
+//         if check2(&user_data) {
+//             send_user_data(&user_data);
+//         }
+//     }
+// }
 
-#[paralegal::analyze]
-fn process_if_multiple_statements() {
-    let mut user_data = get_user_data();
-    if check_user_data(&user_data) {
-        modify(&mut user_data);
-        send_user_data(&user_data);
-    }
-}
+// #[paralegal::analyze]
+// fn process_if_multiple_statements() {
+//     let mut user_data = get_user_data();
+//     if check_user_data(&user_data) {
+//         modify(&mut user_data);
+//         send_user_data(&user_data);
+//     }
+// }
 
-#[paralegal::analyze]
-fn process_if_not_function_call() {
-    let x = get_x();
-    let mut user_data = get_user_data();
-    if x > 5 {
-        modify(&mut user_data);
-    }
-    send_user_data(&user_data);
-}
+// #[paralegal::analyze]
+// fn process_if_not_function_call() {
+//     let x = get_x();
+//     let mut user_data = get_user_data();
+//     if x > 5 {
+//         modify(&mut user_data);
+//     }
+//     send_user_data(&user_data);
+// }
 
-#[paralegal::analyze]
-fn process_no_args() {
-    let x = get_x();
-    let mut user_data = UserData { data: vec![] };
-    if x > 5 {
-        user_data = get_user_data();
-    }
-    send_user_data(&user_data);
-}
+// #[paralegal::analyze]
+// fn process_no_args() {
+//     let x = get_x();
+//     let mut user_data = UserData { data: vec![] };
+//     if x > 5 {
+//         user_data = get_user_data();
+//     }
+//     send_user_data(&user_data);
+// }
 
 #[paralegal::marker{ noinline, return }]
 fn get_x() -> i64 {

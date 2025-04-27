@@ -22,7 +22,7 @@ use std::{
 };
 
 use paralegal_spdg::{
-    traverse::{generic_flows_to, EdgeSelection},
+    traverse::{generic_flows_to, always_depends, EdgeSelection},
     utils::write_sep,
     DefInfo, EdgeInfo, Endpoint, Node, TypeId, SPDG, GlobalNode
 };
@@ -722,6 +722,7 @@ impl FlowsTo for NodeRefs<'_> {
     }
 }
 
+
 /// Lets us test if two graph nodes are connected. For convenience multiple nodes
 /// can be tested at a time via `NodeRefs`.
 pub trait FlowsTo {
@@ -735,7 +736,13 @@ pub trait FlowsTo {
 
     /// Is there a path consisting of only data flow edges connecting `self` to `other`
     fn flows_to_data(&self, other: &impl FlowsTo) -> bool {
+        debug!("DFS: Starting flows to");
         flows_to_impl(self, other, EdgeSelection::Data)
+    }
+
+    fn always_depends_on_data(&self, influencer: &impl FlowsTo) -> bool {
+        debug!("DFS: Starting always depends");
+        always_depends_impl(self, influencer)
     }
 
     /// Is there a path consisting of only control flow edges connecting `self` to `other`
@@ -881,6 +888,7 @@ fn flows_to_impl(
     if slf.spdg_ident() != other.spdg_ident() {
         return false;
     }
+    debug!("DFS: Starting flows to!! ");
     generic_flows_to(
         slf.nodes().iter().copied(),
         edge_selection,
@@ -889,6 +897,43 @@ fn flows_to_impl(
     )
 }
 
+fn always_depends_impl(
+    slf: &(impl FlowsTo + ?Sized),
+    other: &impl FlowsTo,
+) -> bool {
+    if slf.spdg_ident() != other.spdg_ident() {
+        return false;
+    }
+    if let (Some(start), Some(inf)) = (slf.nodes().iter().next(), other.nodes().iter().next()) {
+        debug!("DFS: Found one start and one one sink");
+        // if let Some(inf) = other.nodes().iter().next() {
+            return always_depends(
+                *start,
+                EdgeSelection::Data,
+                slf.spdg(),
+                *inf,
+            )
+        // }
+    }
+    debug!("DFS: aborting because not even 1 source + sink found");
+    return false
+}
+
+fn depends_impl(
+    slf: &(impl FlowsTo + ?Sized),
+    other: &impl FlowsTo,
+    edge_selection: EdgeSelection,
+) -> bool {
+    if slf.spdg_ident() != other.spdg_ident() {
+        return false;
+    }
+    generic_flows_to(
+        slf.nodes().iter().copied().next(),
+        edge_selection,
+        slf.spdg(),
+        other.nodes().iter().copied().next(),
+    )
+}
 fn always_happens_before_impl(
     src: &(impl FlowsTo + ?Sized),
     checkpoint: &impl FlowsTo,

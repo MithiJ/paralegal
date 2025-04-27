@@ -784,9 +784,9 @@ pub struct EdgeInfo {
     pub at: CallString,
     /// Is this edge tentative (TODOM: describe further!)
     pub tentativeness: Tentativeness,
-    /// Why the source of this edge is read TODOM: why is this needed?
+    /// Why the source of this edge is read
     pub source_use: SourceUse,
-    /// Why the target of this edge is written // TODOM: why is this needed?
+    /// Why the target of this edge is written
     pub target_use: TargetUse,
 }
 

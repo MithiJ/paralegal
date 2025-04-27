@@ -152,7 +152,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     };
                     let at = self.make_call_string(ctrl_loc);
                     let src = self.make_dep_node(ctrl_place, ctrl_loc);
-                    debug!("WHat is this one for find control inputs {:?}  {:?}", ctrl_loc, ctrl_place);
+                    // debug!("WHat is this one for find control inputs {:?}  {:?}", ctrl_loc, ctrl_place);
                     let edge = DepEdge::control(
                         at, 
                         SourceUse::Operand, 
@@ -190,7 +190,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     };
                     let at = self.make_call_string(ctrl_loc);
                     let src = self.make_dep_node(ctrl_place, ctrl_loc);
-                    debug!("Is this a possibly case? {:?} => {:?}", ctrl_loc, ctrl_place);
+                    // debug!("Is this a possibly case? {:?} => {:?}", ctrl_loc, ctrl_place);
                     let edge = DepEdge::control(
                         at, 
                         SourceUse::Operand, 
@@ -275,7 +275,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         state: &InstructionState<'tcx>,
         input: Place<'tcx>,
     ) -> Vec<DepNode<'tcx>> {
-        debug!("Finding inputs for place {input:?}");
+        // debug!("Finding inputs for place {input:?}");
         // Include all sources of indirection (each reference in the chain) as relevant places.
         let provenance = input
             .refs_in_projection(&self.mono_body, self.tcx())
@@ -398,9 +398,9 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 // **FIELD-SENSITIVITY:**
                 // Find all places that have been mutated which conflict with `alias.`
                 let last_mutations = &state.last_mutation;
-                if last_mutations.len() > 1 {
-                    debug!("Potentially found tentativeness in multiple last mutations?? for some alias");
-                }
+                // if last_mutations.len() > 1 {
+                //     // debug!("Potentially found tentativeness in multiple last mutations?? for some alias");
+                // }
             
                 let conflicts = last_mutations
                     .iter()
@@ -452,12 +452,12 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                     .chain(alias_last_mut)
                     .flat_map(|(conflict, last_mut_locs)| {
                         let multiple_locs = last_mut_locs.len();
-                        debug!("At the end of data_inputs, for conflict we have {multiple_locs} last locations");
+                        // debug!("At the end of data_inputs, for conflict we have {multiple_locs} last locations");
                         // For each last mutated location:
                         last_mut_locs.iter().map(move |last_mut_loc| {
                             // Return <CONFLICT> @ <LAST_MUT_LOC> as an input node.
                             let conflict_node = self.make_dep_node(conflict, *last_mut_loc);
-                            debug!("this is conflicting node {conflict_node}");
+                            // debug!("this is conflicting node {conflict_node}");
                             conflict_node
                         }) //TODOM
                     })
@@ -811,7 +811,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
         ModularMutationVisitor::new(
             &self.place_info,
             move |location, mutation: Mutation<'tcx>| {
-                debug!("In local analysis {:?}", location);
+                // debug!("In local analysis {:?}", location);
                 // match mutation.status {
                 //     MutationStatus::Possibly => {
                 //         debug!("possibly mutation case");
@@ -865,7 +865,7 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 for location in locations {
                     let src = self.make_dep_node(*place, *location);
                     let dst = self.make_dep_node(*place, RichLocation::End);
-                    debug!("Is this a possibly case? {:?} => {:?}", location, *place);
+                    // debug!("Is this a possibly case? {:?} => {:?}", location, *place);
                     let edge = DepEdge::data(
                         self.make_call_string(self.mono_body.terminator_loc(block)),
                         SourceUse::Operand,
@@ -913,16 +913,16 @@ impl<'tcx, 'a> LocalAnalysis<'tcx, 'a> {
                 } else {
                     continue;
                 };
-                if return_state.last_mutation.len() > 1 {
-                    debug!("found sth tentative!");
-                } else if locations.len() > 1 {
-                    debug!("Hmm maybe locations are tentative?");
-                }
+                // if return_state.last_mutation.len() > 1 {
+                //     debug!("found sth tentative!");
+                // } else if locations.len() > 1 {
+                //     debug!("Hmm maybe locations are tentative?");
+                // }
                 for location in locations {
                     let src = self.make_dep_node(*place, *location);
-                    debug!("source is {}",src);
+                    // debug!("source is {}",src);
                     let dst = self.make_dep_node(*place, RichLocation::End);
-                    debug!("dst is {}",dst);
+                    // debug!("dst is {}",dst);
                     // debug!("Is this a possibly ctrl flow case case? {:?} => {:?}", location, *place);
                     // let tent = if locations.len() > 1 {
                     //     Tentativeness::ControlFlowInduced

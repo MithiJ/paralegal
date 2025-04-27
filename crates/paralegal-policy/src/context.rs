@@ -7,7 +7,7 @@ use std::{io::Write, process::exit, sync::Arc};
 
 use paralegal_spdg::rustc_portable::defid_as_local;
 pub use paralegal_spdg::rustc_portable::{DefId, LocalDefId};
-use paralegal_spdg::traverse::{generic_flows_to, EdgeSelection};
+use paralegal_spdg::traverse::{always_depends, generic_flows_to, EdgeSelection};
 use paralegal_spdg::{
     CallString, DefKind, DisplayNode, Endpoint, GlobalNode, HashMap, HashSet, Identifier,
     InstructionInfo, IntoIterGlobalNodes, Node as SPDGNode, NodeCluster, NodeInfo,
@@ -524,6 +524,21 @@ impl Context {
         })
     }
 
+    /// Checks if one influencee always depends on at least one influencer 
+    /// from a list of potential ones
+    /// Use: any_dependence(self, Node A, [Nodes B, C, D])
+    /// If A always depends on either B, C OR D then this is satisfied.
+    pub fn any_dependence(
+        &self,
+        from: &GlobalNode,
+        influencers: &[GlobalNode],
+    ) -> Option<(GlobalNode, GlobalNode)>  {
+        influencers.iter().find_map(|src| {
+            from.always_depends(*src, self)
+                .then_some((*src, *from))
+        })
+    }
+
     /// Iterate over all defined controllers
     pub fn all_controllers(&self) -> impl Iterator<Item = (Endpoint, &SPDG)> {
         self.desc().controllers.iter().map(|(k, v)| (*k, v))
@@ -717,6 +732,41 @@ where
             sink.iter_nodes(),
         )
     }
+
+    /// 
+    fn always_depends(
+    self,
+    influencer: impl IntoIterGlobalNodes,
+    ctx: &Context,
+) -> bool {
+    let cf_id = self.controller_id();
+    if influencer.controller_id() != cf_id {
+        return false;
+    }
+
+    // if let Some(index) = ctx.flows_to.as_ref() {
+    //     if edge_type.is_data() {
+    //         let flows_to = &index[&cf_id];
+    //         return self.iter_nodes().any(|src| {
+    //             sink.iter_nodes()
+    //                 .any(|sink| flows_to.data_flows_to[src.index()][sink.index()])
+    //         });
+    //     }
+    // }
+    if let Some(src) = self.iter_nodes().next() {
+        if let Some(inf) = influencer.iter_nodes().next() {
+            return always_depends(
+                src,
+                EdgeSelection::Data,
+                &ctx.desc.controllers[&cf_id],
+                inf,
+            );
+        }
+    }
+    return false
+}
+
+    
 
     /// Call sites that consume this node directly. E.g. the outgoing edges.
     fn consuming_call_sites(self, ctx: &'a Context) -> Box<dyn Iterator<Item = CallString> + 'a> {

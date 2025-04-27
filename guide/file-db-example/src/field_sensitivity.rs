@@ -3,7 +3,10 @@
 /// can flow into delete sink based on control flow. We want to show 2 tentative
 /// edges but instead, we find that 2 different _9 nodes flow in, they are 
 /// distinct and thus, we don't attach tentativeness.
-
+#[paralegal::marker(user_data)]
+struct User {
+    name: String,
+}
 #[paralegal::marker(user_data)]
 struct Image {
     name1: String,
@@ -24,10 +27,11 @@ fn delete(user: User) {
         name1: "dummy1".to_string(),
         name2: "dummy2".to_string(),
     };
-    let target = if experimental_value {
-        img.name1
+    // _9 target
+    let target = if experimental_value { //_11
+        img.name1 // 2.0
     } else { 
-        img.name2 
+        img.name2 // 2.1
     };
     delete_sink(target)
 }
@@ -70,7 +74,12 @@ fn delete_sink(name:String) {
 
 #[paralegal::marker(source, return)]
 fn get_from_database(database:&str) -> Image { 
-    todo!()
+    Image {
+        user: User {
+            name: "dummy1".to_string(),
+        },
+        name: "dummy2".to_string(),
+    }
 }
 
 const experimental_value: bool = false;

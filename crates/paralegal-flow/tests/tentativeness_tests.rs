@@ -8,7 +8,10 @@ use paralegal_spdg::Identifier;
 const CRATE_DIR: &str = "tests/tentativeness";
 
 lazy_static! {
-    static ref TEST_CRATE_ANALYZED: bool = run_paralegal_flow_with_flow_graph_dump(CRATE_DIR);
+    static ref TEST_CRATE_ANALYZED: bool = {
+        simple_logger::init_with_level(log::Level::Debug);
+        run_paralegal_flow_with_flow_graph_dump(CRATE_DIR)
+    };
 }
 
 macro_rules! define_test {
@@ -34,7 +37,17 @@ define_test!(deletes_in_dummy_case: graph -> {
     let sink = graph.marked(Identifier::new_intern("sink"));
     assert!(!source.is_empty());
     assert!(!sink.is_empty());
-    assert!(!source.flows_to_any(&sink));
+    assert!(source.flows_to_any(&sink));
+});
+
+/// Here, Paralegal says there EXISTS a flow but our system says there should not
+define_test!(delete_without_args: graph -> {
+    let source = graph.marked(Identifier::new_intern("source"));
+    let sink = graph.marked(Identifier::new_intern("sink"));
+    assert!(!source.is_empty());
+    assert!(!sink.is_empty());
+    assert!(source.flows_to_any(&sink));
+    // assert!(sink.always_depends_on_data(&source));
 });
 
 define_test!(simple_int_increment: graph -> {

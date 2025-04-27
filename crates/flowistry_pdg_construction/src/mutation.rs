@@ -98,13 +98,24 @@ where
         self.time = time;
     }
 
+    // fn handle_reborrow(
+    //     &mut self,
+    //     p1: &Place<'tcx>,
+    //     p2: &Place<'tcx>
+    // ) -> bool {
+    //     let body = self.place_info.body;
+    //     let tcx = self.place_info.tcx;
+    //     p1.ty(body, tcx); //TODOM:
+    //     return true
+    // }
+
     fn handle_special_rvalues(
         &mut self,
         mutated: &Place<'tcx>,
         rvalue: &Rvalue<'tcx>,
         location: Location,
     ) -> bool {
-        debug!("Handling some special rvalues");
+        // debug!("Handling some special rvalues");
         let body = self.place_info.body;
         let tcx = self.place_info.tcx;
 
@@ -115,7 +126,7 @@ where
             Rvalue::Aggregate(agg_kind, ops) => {
                 let (mutated, tys) = match &**agg_kind {
                     AggregateKind::Adt(def_id, idx, substs, _, _) => {
-                        debug!("Another use of aggregate kind adt in mod mut visitor now");
+                        // debug!("Another use of aggregate kind adt in mod mut visitor now");
                         let adt_def = tcx.adt_def(*def_id);
                         let variant = adt_def.variant(*idx);
                         let mutated = match adt_def.adt_kind() {
@@ -274,12 +285,12 @@ where
             })
             .collect::<Vec<_>>();
 
-        debug!("Combine on return!!");
+        // debug!("Combine on return!!");
         for (num, arg) in arg_places.iter().copied() {
             let rv = self.place_info.reachable_values(arg, Mutability::Mut).len();
-            debug!("Has {rv} reachable values");
+            // debug!("Has {rv} reachable values");
         }
-        debug!("Checking {location:?}: {destination:?} , possibly");
+        // debug!("Checking {location:?}: {destination: ?} , possibly");
         for (num, arg) in arg_places.iter().copied() {
             for arg_mut in self.place_info.reachable_values(arg, Mutability::Mut) {
                 if *arg_mut != arg {
@@ -314,7 +325,7 @@ where
         location: Location,
         destination: Place<'tcx>,
     ) {
-        debug!("Combine on args!");
+        // debug!("Combine on args!");
         let arg_place_inputs = arg_places
             .iter()
             .copied()
@@ -331,7 +342,7 @@ where
                     .map(|v| (*v, None))
                     .collect();
                 let ilen = inputs.len();
-                debug!("{ilen} inputs flowing into this arg - definitely case");
+                // debug!("{ilen} inputs flowing into this arg - definitely case");
                 (self.f)(
                     location,
                     Mutation {
@@ -343,13 +354,13 @@ where
                 );
             }
         }
-        debug!("Checking {location:?}: {destination:?} , possibly");
+        // debug!("Checking {location:?}: {destination:?} , possibly");
         if matches!(self.time, Time::Unspecified | Time::After) {
             for (num, arg) in arg_places.iter().copied() {
                 let reachable_vals = self.place_info.reachable_values(arg, Mutability::Mut).len();
-                debug!("{reachable_vals} is the number of values reachable here!!");
+                // debug!("{reachable_vals} is the number of values reachable here!!");
                 for arg_mut in self.place_info.reachable_values(arg, Mutability::Mut) {
-                    debug!("THIS IS THE MOST LIKELY SPOT. if argmut is a component of arg??");
+                    // debug!("THIS IS THE MOST LIKELY SPOT. if argmut is a component of arg??");
                     if *arg_mut != arg {
                         (self.f)(
                             location,
@@ -381,7 +392,7 @@ where
     F: FnMut(Location, Mutation<'tcx>),
 {
     fn visit_assign(&mut self, mutated: &Place<'tcx>, rvalue: &Rvalue<'tcx>, location: Location) {
-        debug!("Checking {location:?}: {mutated:?} = {rvalue:?}, definitely");
+        // debug!("Checking {location:?}: {mutated:?} = {rvalue:?}, definitely");
 
         if !self.handle_special_rvalues(mutated, rvalue, location) {
             let mut collector = PlaceCollector::default();
@@ -399,7 +410,7 @@ where
     }
 
     fn visit_terminator(&mut self, terminator: &Terminator<'tcx>, location: Location) {
-        debug!("Checking {location:?}: {:?}", terminator.kind);
+        // debug!("Checking {location:?}: {:?}", terminator.kind);
 
         if let TerminatorKind::Call {
             /*func,*/ // TODO: deal with func

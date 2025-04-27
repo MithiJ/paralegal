@@ -5,10 +5,14 @@ use either::Either;
 use flowistry::mir::FlowistryInput;
 use log::trace;
 use petgraph::graph::DiGraph;
+use rustc_middle::mir::Body;
+use crate::rustc_middle::mir::HasLocalDecls;
+use rustc_span::symbol::kw::False;
 use crate::graph::Tentativeness;
 use flowistry_pdg::{CallString, GlobalLocation};
 use std::collections::HashSet;
-// use std::collections::HashMap;
+use std::collections::HashMap;
+pub use rustc_middle::ty::TyKind;
 
 use log::{debug, log_enabled, Level};
 
@@ -220,7 +224,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         location: Location,
     ) {
         if let TerminatorKind::SwitchInt { discr, .. } = &terminator.kind {
-            debug!("Hitting a case of definitely mutated for synthetic assignment at terminator");
+            // debug!("Hitting a case of definitely mutated for synthetic assignment at terminator");
             // TODOM: definitely mutated - synthetic assignment
             //TODOM shouldn't this be a tentative edge? This is just the conditional in the switch int being assigned a new spot
             if let Some(place) = discr.place() {
@@ -299,7 +303,7 @@ impl<'mir, 'tcx> ResultsVisitor<'mir, 'tcx, LocalAnalysisResults<'tcx, 'mir>>
         // Read mut status from mutation
         let mut arg_vis =
             ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
-                debug!("{:?}",location);
+                // debug!("{:?}",location);
                 // let tentativeness = match mutation.status {
                 //     MutationStatus::Possibly => {
                 //         debug!("possibly mutation case");
@@ -339,7 +343,7 @@ impl<'tcx> PartialGraph<'tcx> {
         /// the other places register_mutation is called and it should be 
         /// evident where the information comes from!
         ModularMutationVisitor::new(&results.analysis.place_info, move |location, mutation| {
-            debug!("{:?}",location);
+            // debug!("{:?}",location);
             // let tentativeness = match mutation.status {
             //     MutationStatus::Possibly => {
             //         debug!("possibly mutation case");
@@ -409,7 +413,7 @@ impl<'tcx> PartialGraph<'tcx> {
                     Box::new(AggregateKind::Tuple),
                     IndexVec::from_iter(args.iter().cloned()),
                 );
-                debug!("We are registering a synthetic assignment here. Perhaps also narrowing? #1");
+                // debug!("We are registering a synthetic assignment here. Perhaps also narrowing? #1");
                 self.modular_mutation_visitor(results, state).visit_assign(
                     destination,
                     &rvalue,
@@ -451,10 +455,10 @@ impl<'tcx> PartialGraph<'tcx> {
         // YOu can always have tentativeness in indirection
         // aliases- reachable places : 
         // Can you have 2 aliases that are both modified mutable borrow
-        trace!("PARENT -> CHILD EDGES:");
+        // trace!("PARENT -> CHILD EDGES:");
         for (child_src, _kind) in child_graph.parentable_srcs(is_root) {
             if let Some(translation) = translator.translate_to_parent(child_src.place) {
-                debug!("TODOM: traslating to parent");
+                // debug!("TODOM: traslating to parent");
                 self.register_mutation_with_tentativeness(
                     results,
                     state,
@@ -505,6 +509,7 @@ impl<'tcx> PartialGraph<'tcx> {
     /// Local analysis- for each place, what was the last time it was modified?
     /// Instruction State
     /// Construct.rs - spans the whole call tree in partial graph
+    /// 
     fn register_mutation_with_tentativeness(
         &mut self,
         results: &LocalAnalysisResults<'tcx, '_>,
@@ -515,12 +520,13 @@ impl<'tcx> PartialGraph<'tcx> {
         target_use: TargetUse,
         tentativeness: Tentativeness
     ) {
-        debug!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
-        let constructor = &results.analysis;
+        // debug!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
+        let constructor = &results.analysis; // this has the body
         let ctrl_inputs = constructor.find_control_inputs_with_tentativeness(location);
 
         debug!("  Found control inputs {ctrl_inputs:?}");
-
+        // constructor.tcx() // for tyctxt
+        // constructor.mono_body // is body
         let (input_place, data_inputs) = match inputs {
             Inputs::Unresolved { places } => {
                 let input_nodes = places
@@ -545,19 +551,38 @@ impl<'tcx> PartialGraph<'tcx> {
                 (Some(node.place), vec![(node, node_use)])
                 },
         };
-        trace!("  Data inputs: {data_inputs:?}");
+        debug!("  Data inputs:{:?} {data_inputs:?}", data_inputs.len());
         // any different base local then tentative
         // empty projection overlaps everything else
         // S.0 and S.1 is distinct projections of the same base local
         // TODO: test case for S.0.1
         let mut seen = HashSet::new();
+
         for (node, _) in data_inputs.iter() {
+            debug!("Node inputs as places {:?}", node.place);
+            // debug!("Node inputs as places {:?}", node.place.ty(local_decls, tcx));
             if seen.len() == 0 {
+                // debug!("first node {:?}", node);
                 seen.insert(node);
-            } else if !seen.iter().all(|&x| places_distinct(x.place, node.place)) {
-                // only insert non overlapping nodes
-                //technically also have to remove x from set()
-                seen.insert(node);
+            } else {
+                let mut distinct = true;
+                for x in seen.iter() {
+                    if !places_distinct(x.place, node.place, &constructor.mono_body, constructor.tcx()) {
+                        // check_reborrow(x.place, node.place,&constructor.mono_body,constructor.tcx() );
+                        debug!("{:?} is not distinct from {:?}", x.place, node.place);
+                        distinct = false;
+                        break;
+                    } else {
+                        debug!("{:?} is distinct from {:?}", x.place, node.place);
+                    }
+                    // debug!("{:?} is distinct from {:?}", x.place, node.place);
+                }
+                // only insert overlapping nodes
+                // technically also have to remove x from set()
+                if !distinct {
+                    // debug!("distinct node {:?}", node);
+                    seen.insert(node);
+                }
             }
             // match input_place {
             //     Some(input) => {
@@ -587,7 +612,7 @@ impl<'tcx> PartialGraph<'tcx> {
             //     None => {unique_inputs += 1},
             // }
         }
-        debug!("{:?}", seen);
+        // debug!("{:?}", seen);
 
         let outputs = match mutated {
             Either::Right(node) => vec![node],
@@ -598,7 +623,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 .map(|t| t.1)
                 .collect(),
         };
-        trace!("  Outputs: {outputs:?}");
+        // trace!("  Outputs: {outputs:?}");
 
         for output in &outputs {
             trace!("  Adding node {output}");
@@ -610,6 +635,7 @@ impl<'tcx> PartialGraph<'tcx> {
             // debug!("At location{loc} seen: {seen_ct} \n");
             let mut tent = Tentativeness::Certain;
             if num_inputs > 1 { 
+                // If there are multiple distinct inputs
                 tent = Tentativeness::ControlFlowInduced;
             }
 
@@ -620,7 +646,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 tent
             );
             for output in &outputs {
-                trace!("  Adding edge {data_input} -> {output}");
+                // trace!("  Adding edge {data_input} -> {output}");
                 self.edges.insert((data_input, *output, data_edge));
             }
         }
@@ -642,11 +668,11 @@ impl<'tcx> PartialGraph<'tcx> {
         location: Location,
         target_use: TargetUse,
     ) {
-        trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
+        // trace!("Registering mutation to {mutated:?} with inputs {inputs:?} at {location:?}");
         let constructor = &results.analysis;
         let ctrl_inputs = constructor.find_control_inputs_with_tentativeness(location);
 
-        trace!("  Found control inputs {ctrl_inputs:?}");
+        // trace!("  Found control inputs {ctrl_inputs:?}");
 
         let data_inputs = match inputs {
             Inputs::Unresolved { places } => places
@@ -665,7 +691,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 .collect::<Vec<_>>(),
             Inputs::Resolved { node_use, node } => vec![(node, node_use)],
         };
-        trace!("  Data inputs: {data_inputs:?}");
+        // trace!("  Data inputs: {data_inputs:?}");
 
         let outputs = match mutated {
             Either::Right(node) => vec![node],
@@ -676,10 +702,10 @@ impl<'tcx> PartialGraph<'tcx> {
                 .map(|t| t.1)
                 .collect(),
         };
-        trace!("  Outputs: {outputs:?}");
+        // trace!("  Outputs: {outputs:?}");
 
         for output in &outputs {
-            trace!("  Adding node {output}");
+            // trace!("  Adding node {output}");
             self.nodes.insert(*output);
         }
 
@@ -694,7 +720,7 @@ impl<'tcx> PartialGraph<'tcx> {
                 // run with the new tentativeness field within the DepEdge struct
             );
             for output in &outputs {
-                trace!("  Adding edge {data_input} -> {output}");
+                // trace!("  Adding edge {data_input} -> {output}");
                 self.edges.insert((data_input, *output, data_edge));
             }
         }
@@ -761,34 +787,98 @@ impl<'tcx> PartialGraph<'tcx> {
 }
 
 /// Defines whether places are distinct or overlapping for purposes of 
-    /// tentativeness. If 2 distinct places flow to a single node, the edges 
-    /// associated would be certain. However, if 2 overlapping nodes flow to
-    /// a single node, the edges associated would be tentative (because the 
-    /// nodes are distinct and multiple).
-    /// 
-    /// Places are said to be distinct iff they are projections of the same
-    /// struct. First, they must have the same base local. Then, their sequence
-    /// of projections must be the same except for the last projection element
-    /// in the list. For example-
-    /// 1) "15.0" vs "15.1" are distinct because they are distinct fields of the 
-    /// _15 struct
-    /// 2) "15" vs "15.0" are overlapping because the former refers to the 
-    /// struct and the latter refers to the field. Similarly "15.0" and "15.0.1"
-    /// are also overlapping/non-distinct. Here, we use the list of projection 
-    /// elements to figure out if one is the parent struct of the other or if 
-    /// both are simply fields
-    /// 3) "16" vs "15" are non-distinct because they cannot be proven to be 
-    /// distinct places (there may be aliasing involved)
-    pub fn places_distinct<'tcx>(p1: Place<'tcx>, p2: Place<'tcx>) -> bool {
-        // _16 vs _15
-        if p1.local != p2.local {
-            return false
-        }
-        // 15.0 vs 15.0.1 OR 15.1 vs 15.0.1
-        // if p1.projection.len() != p2.projection.len() {
-        //     return false
-        // }
-        // 15.0 vs 15.1 OR 15.0.3 vs 15.1.0
-        let length = p1.projection.len().min(p2.projection.len());
-        return p1.projection.iter().take(length - 1).eq(p2.projection.iter().take(length - 1))
+/// tentativeness. If 2 distinct places flow to a single node, the edges 
+/// associated would be certain. However, if 2 overlapping nodes flow to
+/// a single node, the edges associated would be tentative (because the 
+/// nodes are distinct and multiple).
+/// 
+/// Places are said to be distinct iff they are projections of the same
+/// struct. First, they must have the same base local. Then, their sequence
+/// of projections must be the same except for the last projection element
+/// in the list. For example-
+/// 1) "15.0" vs "15.1" are distinct because they are distinct fields of the 
+/// _15 struct
+/// 2) "15" vs "15.0" are overlapping because the former refers to the 
+/// struct and the latter refers to the field. Similarly "15.0" and "15.0.1"
+/// are also overlapping/non-distinct. Here, we use the list of projection 
+/// elements to figure out if one is the parent struct of the other or if 
+/// both are simply fields
+/// 3) "16" vs "15" are non-distinct because they cannot be proven to be 
+/// distinct places (there may be aliasing involved)
+pub fn places_distinct<'tcx>(p1: Place<'tcx>, p2: Place<'tcx>, body: &Body<'tcx> , tcx: TyCtxt<'tcx> ) -> bool {
+    // _16 vs _15
+    debug!{"{:?} vs {:?}", p1, p2};
+    let ty_p1 = p1.ty(body.local_decls(), tcx);
+    let ty_p2 = p2.ty(body.local_decls(), tcx);
+
+    let is_direct_deref = match (ty_p1.ty.kind(), ty_p2.ty.kind()) {
+        // Check if ty_p1 is &T and ty_p2 is T
+        (TyKind::Ref(_, inner_ty, _), _) => *inner_ty == ty_p2.ty,
+        
+        // Check if ty_p2 is &T and ty_p1 is T
+        (_, TyKind::Ref(_, inner_ty, _)) => *inner_ty == ty_p1.ty,
+        
+        _ => false
+    };
+    debug!("p1: {:?} vs p2:{:?} and we said {:?}", ty_p1, ty_p2, is_direct_deref);
+    // Check if ty1 derefs to ty2
+    // let is_ty1_deref_of_ty2 = tcx.try_deref(ty1) == Some(ty2);
+
+// Check if ty2 derefs to ty1 
+    // let is_ty2_deref_of_ty1 = tcx.try_deref(ty2) == Some(ty1);
+    // debug!("Is t1 &T {:?} or is t2 &T: {:?}", is_ty1_deref_of_ty2, is_ty2_deref_of_ty1);
+    if p1.local != p2.local {
+        // check if reborrow
+        return is_direct_deref
     }
+    // 15 vs 15.0 is overlapping
+    // 15.0 vs 15.0.1 OR 15.1 vs 15.0.1 -> [0, 1]
+    // 15.0 vs 15.1 OR 15.0.3 vs 15.1.0
+    let mut i_ind = 0;
+    let mut j_ind = 0;
+    while i_ind < p1.projection.len() && j_ind < p2.projection.len() {
+         let i  = p1.projection[i_ind];
+         let j  = p1.projection[j_ind];
+        debug!{" proj{:?} vs {:?}", i, j};
+        let mut deref = false;
+        match (i, j) {
+            // Both are derefs - continue checking
+            (ProjectionElem::Deref, ProjectionElem::Deref) => {
+                i_ind += 1;
+                j_ind += 1;
+                continue;
+            },
+            
+            // One is deref and the other isn't - distinct
+            (ProjectionElem::Deref, _) | (_, ProjectionElem::Deref) => return true,
+            
+            // if we have 15.1 vs 15.0.1 or 15.1 vs 15.0 as distinct.
+            _ => if i != j { return true },
+        }
+        i_ind += 1;
+        j_ind += 1;
+    }
+    // This may just be return false
+    return is_direct_deref
+}
+
+// / _1 vs _1 overlap
+// / _1 and *_1 DISTINCT. 
+// / Have to prove that of the reference is assigned we still track that as tentativeness
+// / _1 cannot have fields 
+// / *_1 and *_1.1 Overlaps because field of an object
+// / _1 vs (*_1).1 does not overlap
+// / (*_1).1 vs (*((*_1).1)) distinct due to above rule
+// / *_1 vs *_1 overlap because same object - both assign the same spot
+// / if loc 1 assigns _1 but loc 2 assigns (*_1)then it should show a mutation for _1 too TEST
+// / 
+
+// pub fn check_reborrow<'tcx>(p1: Place<'tcx>, p2: Place<'tcx>, body: &Body<'tcx> , tcx: TyCtxt<'tcx>) -> bool {
+//     debug!("c");
+//     let ty_p1 = p1.ty(body.local_decls(), tcx);
+//     let ty_p2 = p2.ty(body.local_decls(), tcx);
+//     debug!("p1: {:?} vs p2:{:?}", ty_p1, ty_p2);
+//     return true
+//     // Ref<String> @ 14 ---p1  vs String @15 --- p2
+//     // 
+// }
